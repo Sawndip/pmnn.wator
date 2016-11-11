@@ -3,9 +3,6 @@
 #include <memory>
 using namespace std;
 
-typedef shared_ptr<WatorBaseL> WatorBaseLPtr;
-
-
 
 class WatorBaseL {
 public:
@@ -14,6 +11,9 @@ protected:
 };
 WatorBaseL::WatorBaseL(){
 }
+
+typedef shared_ptr<WatorBaseL> WatorBaseLPtr;
+
 
 class WatorInputL :public WatorBaseL {
 public:
