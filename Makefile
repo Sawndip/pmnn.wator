@@ -1,4 +1,6 @@
+
+CXXFLAGS := -std=c++14
 all:
-	clang++ main.cpp -o move.out
+	clang++ $(CXXFLAGS) main.cpp -o move.out
 run:all
 	./move.out
