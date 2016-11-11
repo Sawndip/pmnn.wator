@@ -71,7 +71,7 @@ WatorOutputL::WatorOutputL()
 }
 void WatorOutputL::addButtom(WatorBaseLPtr buttom) {
   buttom_.push_back(buttom);
-  depth_ = buttom->depth();
+  depth_ = buttom->depth() +1;
 }
 void WatorOutputL::layout()
 {
@@ -102,7 +102,7 @@ void WatorHiddenL::addTop(WatorBaseLPtr top)
 void WatorHiddenL::addButtom(WatorBaseLPtr buttom)
 {
   buttom_.push_back(buttom);
-  depth_ = buttom->depth();
+  depth_ = buttom->depth() +1;
 }
 void WatorHiddenL::layout()
 {
