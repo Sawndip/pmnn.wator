@@ -74,12 +74,12 @@ void WatorNet::layout() {
 }
 
 int main() {
-  shared_ptr<WatorInputL> input(new(WatorInputL));
-  shared_ptr<WatorHiddenL> hide1(new WatorHiddenL());
-  shared_ptr<WatorHiddenL> hide2(new WatorHiddenL());
-  shared_ptr<WatorOutputL> out(new WatorOutputL());
+  shared_ptr<WatorInputL> input = make_shared<WatorInputL>();
+  shared_ptr<WatorHiddenL> hide1 = make_shared<WatorHiddenL>();
+  shared_ptr<WatorHiddenL> hide2 = make_shared<WatorHiddenL>();
+  shared_ptr<WatorOutputL> out = make_shared<WatorOutputL>();
   
-  input << hide1;
+  input << dynamic_pointer_cast<WatorBaseLPtr>(hide1);
 
   WatorNet net(input);
   net.layout();
