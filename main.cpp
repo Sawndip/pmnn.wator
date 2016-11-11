@@ -52,6 +52,7 @@ class WatorNet {
 public:
   WatorNet(WatorBaseLPtr entry);
   void train();
+  void layout();
 private:
   WatorBaseLPtr entry_;
 };
@@ -61,10 +62,17 @@ WatorNet::WatorNet(WatorBaseLPtr entry)
 }
 void WatorNet::train() {
 }
+void WatorNet::layout() {
+}
 
 int main() {
   shared_ptr<WatorInputL> input(new(WatorInputL));
+  shared_ptr<WatorHiddenL> hide1(new WatorHiddenL());
+  shared_ptr<WatorHiddenL> hide2(new WatorHiddenL());
+  shared_ptr<WatorOutputL> out(new WatorOutputL());
+
   WatorNet net(input);
+  net.layout();
   net.train();
   return 0;
 }
