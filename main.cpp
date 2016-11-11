@@ -33,7 +33,7 @@ void WatorInputL::addTop (WatorBaseLPtr top){
 class WatorOutputL :public WatorBaseL {
 public:
   WatorOutputL();
-  void operator >> (WatorBaseLPtr buttom);
+  void addButtom(WatorBaseLPtr buttom);
 protected:
   vector<WatorBaseLPtr> buttom_;
 };
@@ -41,12 +41,16 @@ protected:
 WatorOutputL::WatorOutputL()
   :WatorBaseL(){
 }
+void WatorOutputL::addButtom(WatorBaseLPtr buttom) {
+  buttom_.push_back(buttom);
+}
+
 
 class WatorHiddenL :public WatorBaseL {
 public:
   WatorHiddenL();
-  void operator << (WatorBaseLPtr top);
-  void operator >> (WatorBaseLPtr buttom);
+  void addTop(WatorBaseLPtr top);
+  void addButtom(WatorBaseLPtr buttom);
 protected:
   vector<WatorBaseLPtr> top_;
   vector<WatorBaseLPtr> buttom_;
@@ -55,6 +59,16 @@ protected:
 WatorHiddenL::WatorHiddenL()
   :WatorBaseL(){
 }
+void WatorHiddenL::addTop(WatorBaseLPtr top)
+{
+  top_.push_back(top);
+}
+void WatorHiddenL::addButtom(WatorBaseLPtr buttom)
+{
+  buttom_.push_back(buttom);
+}
+
+
 
 class WatorNet {
 public:
@@ -80,7 +94,13 @@ int main() {
   shared_ptr<WatorOutputL> out = make_shared<WatorOutputL>();
   
   input->addTop(hide1);
+  hide1->addTop(hide2);
+  hide2->addTop(out);
 
+  hide1->addButtom(input);
+  hide2->addButtom(hide1);
+  out->addButtom(hide2);
+  
   WatorNet net(input);
   net.layout();
   net.train();
