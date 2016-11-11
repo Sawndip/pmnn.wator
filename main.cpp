@@ -8,10 +8,13 @@ using namespace std;
 class WatorBaseL {
 public:
   virtual void layout();
-  void name(const string &name);
 protected:
   WatorBaseL();
+  void name(const string &name);
+  int depth(void);
+protected:
   string name_;
+  int depth_ = 0;
 };
 WatorBaseL::WatorBaseL(){
 }
@@ -21,6 +24,10 @@ void WatorBaseL::name(const string &name)
 {
   name_ = name;
 }
+int WatorBaseL::depth(void){
+  return depth_;
+}
+
 
 
 typedef shared_ptr<WatorBaseL> WatorBaseLPtr;
@@ -64,15 +71,14 @@ WatorOutputL::WatorOutputL()
 }
 void WatorOutputL::addButtom(WatorBaseLPtr buttom) {
   buttom_.push_back(buttom);
+  depth_ = buttom->depth();
 }
 void WatorOutputL::layout()
 {
-  cout << name_ << endl;
-/*  
-  for(auto top:top_) {
-    top->layout();
+  for(int i = 0 ;i < depth_ ;i++) {
+    cout << "  ";
   }
-*/
+  cout << name_ << endl;
 }
 
 class WatorHiddenL :public WatorBaseL {
@@ -96,9 +102,13 @@ void WatorHiddenL::addTop(WatorBaseLPtr top)
 void WatorHiddenL::addButtom(WatorBaseLPtr buttom)
 {
   buttom_.push_back(buttom);
+  depth_ = buttom->depth();
 }
 void WatorHiddenL::layout()
 {
+  for(int i = 0 ;i < depth_ ;i++) {
+    cout << "  ";
+  }
   cout << name_ << endl;
   for(auto top:top_) {
     top->layout();
