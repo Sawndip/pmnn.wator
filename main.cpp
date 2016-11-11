@@ -79,7 +79,7 @@ int main() {
   shared_ptr<WatorHiddenL> hide2 = make_shared<WatorHiddenL>();
   shared_ptr<WatorOutputL> out = make_shared<WatorOutputL>();
   
-  input << dynamic_pointer_cast<WatorBaseLPtr>(hide1);
+  input << dynamic_pointer_cast<WatorBaseL>(hide1);
 
   WatorNet net(input);
   net.layout();
