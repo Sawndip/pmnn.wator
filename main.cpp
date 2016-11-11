@@ -12,6 +12,9 @@ protected:
 };
 WatorBaseL::WatorBaseL(){
 }
+void WatorBaseL::layout() {
+}
+
 
 typedef shared_ptr<WatorBaseL> WatorBaseLPtr;
 
@@ -37,6 +40,8 @@ void WatorInputL::layout()
     top->layout();
   }
 }
+
+
 
 class WatorOutputL :public WatorBaseL {
 public:
