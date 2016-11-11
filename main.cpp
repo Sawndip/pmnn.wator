@@ -56,9 +56,11 @@ void WatorOutputL::addButtom(WatorBaseLPtr buttom) {
 void WatorOutputL::layout()
 {
   cout << typeid(this).name() << endl;
+/*  
   for(auto top:top_) {
     top->layout();
   }
+*/
 }
 
 class WatorHiddenL :public WatorBaseL {
