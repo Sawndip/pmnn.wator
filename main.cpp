@@ -53,19 +53,20 @@ WatorHiddenL::WatorHiddenL()
 
 class WatorNet {
 public:
-  WatorNet();
+  WatorNet(WatorBaseLPtr entry);
   void train();
 private:
   WatorBaseLPtr entry_;
 }
-WatorNet::WatorNet() {
+WatorNet::WatorNet(WatorBaseLPtr entry) {
+  :entry_(entry)
 }
 void WatorNet::train() {
 }
 
 int main() {
   shared_ptr<WatorInputL> input(new(WatorInputL));
-  WatorNet net;
+  WatorNet net(input);
   net.train();
   return 0;
 }
