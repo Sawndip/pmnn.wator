@@ -1,18 +1,25 @@
 #include <iostream>
 #include <vector>
 #include <memory>
+#include <string>
 using namespace std;
 
 
 class WatorBaseL {
 public:
   virtual void layout();
+  void name(const string &name);
 protected:
   WatorBaseL();
+  string name_;
 };
 WatorBaseL::WatorBaseL(){
 }
 void WatorBaseL::layout() {
+}
+void WatorBaseL::name(const string &name) 
+{
+  name_ = name;
 }
 
 
@@ -35,7 +42,7 @@ void WatorInputL::addTop (WatorBaseLPtr top){
 }
 void WatorInputL::layout()
 {
-  cout << typeid(this).name() << endl;
+  cout << name_ << endl;
   for(auto top:top_) {
     top->layout();
   }
@@ -60,7 +67,7 @@ void WatorOutputL::addButtom(WatorBaseLPtr buttom) {
 }
 void WatorOutputL::layout()
 {
-  cout << typeid(this).name() << endl;
+  cout << name_ << endl;
 /*  
   for(auto top:top_) {
     top->layout();
@@ -92,7 +99,7 @@ void WatorHiddenL::addButtom(WatorBaseLPtr buttom)
 }
 void WatorHiddenL::layout()
 {
-  cout << typeid(this).name() << endl;
+  cout << name_ << endl;
   for(auto top:top_) {
     top->layout();
   }
@@ -117,11 +124,17 @@ void WatorNet::layout() {
   entry_->layout();
 }
 
+#define NAME_(x) {x->name(#x);}
+
 int main() {
   shared_ptr<WatorInputL> input = make_shared<WatorInputL>();
+  NAME_(input);
   shared_ptr<WatorHiddenL> hide1 = make_shared<WatorHiddenL>();
+  NAME_(hide1);
   shared_ptr<WatorHiddenL> hide2 = make_shared<WatorHiddenL>();
+  NAME_(hide2);
   shared_ptr<WatorOutputL> out = make_shared<WatorOutputL>();
+  NAME_(out);
   
   input->addTop(hide1);
   hide1->addTop(hide2);
