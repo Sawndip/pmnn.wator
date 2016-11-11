@@ -54,7 +54,8 @@ public:
   void train();
 private:
   WatorBaseLPtr entry_;
-}
+};
+
 WatorNet::WatorNet(WatorBaseLPtr entry)
   :entry_(entry) {
 }
