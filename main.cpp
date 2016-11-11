@@ -8,10 +8,10 @@ using namespace std;
 class WatorBaseL {
 public:
   virtual void layout();
-protected:
-  WatorBaseL();
   void name(const string &name);
   int depth(void);
+protected:
+  WatorBaseL();
 protected:
   string name_;
   int depth_ = 0;
