@@ -3,6 +3,9 @@
 #include <memory>
 using namespace std;
 
+typedef shared_ptr<WatorBaseL> WatorBaseLPtr;
+
+
 
 class WatorBaseL {
 public:
@@ -16,7 +19,7 @@ class WatorInputL :public WatorBaseL {
 public:
   WatorInputL();
 protected:
-  vector<WatorBaseL> top_;
+  vector<WatorBaseLPtr> top_;
 };
 WatorInputL::WatorInputL()
   :WatorBaseL()
@@ -27,7 +30,7 @@ class WatorOutputL :public WatorBaseL {
 public:
   WatorOutputL();
 protected:
-  vector<WatorBaseL> buttom_;
+  vector<WatorBaseLPtr> buttom_;
 };
 
 WatorOutputL::WatorOutputL()
@@ -39,8 +42,8 @@ class WatorHiddenL :public WatorBaseL {
 public:
   WatorHiddenL();
 protected:
-  vector<WatorBaseL> top_;
-  vector<WatorBaseL> buttom_;
+  vector<WatorBaseLPtr> top_;
+  vector<WatorBaseLPtr> buttom_;
 };
 
 WatorHiddenL::WatorHiddenL()
