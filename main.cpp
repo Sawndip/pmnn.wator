@@ -18,14 +18,14 @@ typedef shared_ptr<WatorBaseL> WatorBaseLPtr;
 class WatorInputL :public WatorBaseL {
 public:
   WatorInputL();
-  void operator << (WatorBaseLPtr top);
+  void addTop(WatorBaseLPtr top);
 protected:
   vector<WatorBaseLPtr> top_;
 };
 WatorInputL::WatorInputL()
   :WatorBaseL(){
 }
-void WatorInputL::operator << (WatorBaseLPtr top){
+void WatorInputL::addTop (WatorBaseLPtr top){
   top_.push_back(top);
 }
 
@@ -79,7 +79,7 @@ int main() {
   shared_ptr<WatorHiddenL> hide2 = make_shared<WatorHiddenL>();
   shared_ptr<WatorOutputL> out = make_shared<WatorOutputL>();
   
-  input << dynamic_pointer_cast<WatorBaseL>(hide1);
+  input->addTop(hide1);
 
   WatorNet net(input);
   net.layout();
