@@ -6,6 +6,7 @@ using namespace std;
 
 class WatorBaseL {
 public:
+  virtual void layout();
 protected:
   WatorBaseL();
 };
@@ -19,6 +20,7 @@ class WatorInputL :public WatorBaseL {
 public:
   WatorInputL();
   void addTop(WatorBaseLPtr top);
+  virtual void layout();
 protected:
   vector<WatorBaseLPtr> top_;
 };
@@ -28,12 +30,19 @@ WatorInputL::WatorInputL()
 void WatorInputL::addTop (WatorBaseLPtr top){
   top_.push_back(top);
 }
-
+void WatorInputL::layout()
+{
+  cout << typeid(this).name() << endl;
+  for(auto top:top_) {
+    top->layout();
+  }
+}
 
 class WatorOutputL :public WatorBaseL {
 public:
   WatorOutputL();
   void addButtom(WatorBaseLPtr buttom);
+  virtual void layout();
 protected:
   vector<WatorBaseLPtr> buttom_;
 };
@@ -44,13 +53,20 @@ WatorOutputL::WatorOutputL()
 void WatorOutputL::addButtom(WatorBaseLPtr buttom) {
   buttom_.push_back(buttom);
 }
-
+void WatorOutputL::layout()
+{
+  cout << typeid(this).name() << endl;
+  for(auto top:top_) {
+    top->layout();
+  }
+}
 
 class WatorHiddenL :public WatorBaseL {
 public:
   WatorHiddenL();
   void addTop(WatorBaseLPtr top);
   void addButtom(WatorBaseLPtr buttom);
+  virtual void layout();
 protected:
   vector<WatorBaseLPtr> top_;
   vector<WatorBaseLPtr> buttom_;
@@ -67,7 +83,13 @@ void WatorHiddenL::addButtom(WatorBaseLPtr buttom)
 {
   buttom_.push_back(buttom);
 }
-
+void WatorHiddenL::layout()
+{
+  cout << typeid(this).name() << endl;
+  for(auto top:top_) {
+    top->layout();
+  }
+}
 
 
 class WatorNet {
@@ -85,6 +107,7 @@ WatorNet::WatorNet(WatorBaseLPtr entry)
 void WatorNet::train() {
 }
 void WatorNet::layout() {
+  entry_->layout();
 }
 
 int main() {
