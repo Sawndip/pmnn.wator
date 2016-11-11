@@ -22,8 +22,7 @@ protected:
   vector<WatorBaseLPtr> top_;
 };
 WatorInputL::WatorInputL()
-  :WatorBaseL()
-{
+  :WatorBaseL(){
 }
 
 class WatorOutputL :public WatorBaseL {
@@ -34,8 +33,7 @@ protected:
 };
 
 WatorOutputL::WatorOutputL()
-  :WatorBaseL()
-{
+  :WatorBaseL(){
 }
 
 class WatorHiddenL :public WatorBaseL {
@@ -47,8 +45,7 @@ protected:
 };
 
 WatorHiddenL::WatorHiddenL()
-  :WatorBaseL()
-{
+  :WatorBaseL(){
 }
 
 class WatorNet {
@@ -58,8 +55,8 @@ public:
 private:
   WatorBaseLPtr entry_;
 }
-WatorNet::WatorNet(WatorBaseLPtr entry) {
-  :entry_(entry)
+WatorNet::WatorNet(WatorBaseLPtr entry)
+  :entry_(entry) {
 }
 void WatorNet::train() {
 }
