@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <memory>
 using namespace std;
 
 
@@ -8,6 +9,8 @@ public:
 protected:
   WatorBaseL();
 };
+WatorBaseL::WatorBaseL(){
+}
 
 class WatorInputL :public WatorBaseL {
 public:
@@ -15,6 +18,10 @@ public:
 protected:
   vector<WatorBaseL> top_;
 };
+WatorInputL::WatorInputL()
+  :WatorBaseL()
+{
+}
 
 class WatorOutputL :public WatorBaseL {
 public:
@@ -23,6 +30,11 @@ protected:
   vector<WatorBaseL> buttom_;
 };
 
+WatorOutputL::WatorOutputL()
+  :WatorBaseL()
+{
+}
+
 class WatorHiddenL :public WatorBaseL {
 public:
   WatorHiddenL();
@@ -30,6 +42,11 @@ protected:
   vector<WatorBaseL> top_;
   vector<WatorBaseL> buttom_;
 };
+
+WatorHiddenL::WatorHiddenL()
+  :WatorBaseL()
+{
+}
 
 
 int main() {
