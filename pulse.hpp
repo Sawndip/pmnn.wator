@@ -2,6 +2,7 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <cstdint>
 using namespace std;
 
 #pragma once
@@ -11,6 +12,7 @@ public:
   virtual void layout();
   void name(const string &name);
   int depth(void);
+  virtual void forward();
 protected:
   WatorBaseL();
 protected:
@@ -26,8 +28,10 @@ public:
   WatorInputL();
   void addTop(WatorBaseLPtr top);
   virtual void layout();
+  virtual void forward();
 protected:
   vector<WatorBaseLPtr> top_;
+  int16_t blob_;
 };
 
 

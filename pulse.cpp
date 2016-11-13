@@ -4,6 +4,8 @@
 #include <string>
 using namespace std;
 #include "pulse.hpp"
+#include "wave.hpp"
+#define DUMP_VAR(x) {cout << #x "=<" << x << ">" << endl;}
 
 
 WatorBaseL::WatorBaseL(){
@@ -16,6 +18,8 @@ void WatorBaseL::name(const string &name)
 }
 int WatorBaseL::depth(void){
   return depth_;
+}
+void WatorBaseL::forward(){
 }
 
 
@@ -30,6 +34,21 @@ void WatorInputL::layout()
   cout << name_ << endl;
   for(auto top:top_) {
     top->layout();
+  }
+}
+void WatorInputL::forward(){
+  auto waves = readWave("./waveform/myRecording03.wav");
+  DUMP_VAR(waves.size());
+  if(waves.empty()) {
+    return ;
+  }
+  auto wave = waves.begin();
+  DUMP_VAR(wave->size());
+  for(int i = 0;i < wave->size() -1;i++) {
+    blob_ = wave->at(i);
+    for(auto top:top_) {
+      top->forward();
+    }
   }
 }
 
@@ -80,6 +99,7 @@ WatorNet::WatorNet(WatorBaseLPtr entry)
   :entry_(entry) {
 }
 void WatorNet::train() {
+    entry_->forward();
 }
 void WatorNet::layout() {
   entry_->layout();
