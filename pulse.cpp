@@ -36,16 +36,21 @@ void WatorInputL::layout()
     top->layout();
   }
 }
+
 void WatorInputL::forward(){
   auto waves = readWave("./waveform/myRecording03.wav");
   DUMP_VAR(waves.size());
   if(waves.empty()) {
     return ;
   }
+
   auto wave = waves.begin();
   DUMP_VAR(wave->size());
   for(int i = 0;i < wave->size() -1;i++) {
-    blob_ = wave->at(i);
+    blob_.push_back(wave->at(i));
+    if(blob_.size() > iMaxWaveLength_) {
+      blob_.pop_front();
+    }
     for(auto top:top_) {
       top->forward();
     }

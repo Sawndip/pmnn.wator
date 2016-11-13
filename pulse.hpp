@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 #include <cstdint>
+#include <list>
 using namespace std;
 
 #pragma once
@@ -31,7 +32,9 @@ public:
   virtual void forward();
 protected:
   vector<WatorBaseLPtr> top_;
-  int16_t blob_;
+  list<int16_t> blob_;
+  const int iMaxWaveLength_ = 1024*1024;
+private:
 };
 
 
