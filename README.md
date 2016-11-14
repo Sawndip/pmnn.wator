@@ -1,2 +1,2 @@
-# move.wator
-movement 
+# pmnn.wator
+Pulse Memory Neural Network 
