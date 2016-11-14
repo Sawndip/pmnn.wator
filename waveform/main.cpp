@@ -56,8 +56,10 @@ int main() {
         }
         int x = i % iConstWaveGraphWidth;
         
-        mat.at<cv::Vec3b>(yWave, x) = cv::Vec3b(0,0,255);
-        mat.at<cv::Vec3b>(yDiff, x) = cv::Vec3b(0,255,0);
+    	//mat.at<cv::Vec3b>(yWave, x) = cv::Vec3b(0,0,255);
+    	cv::line(mat,cv::Point(x,yWave),cv::Point(x,INT16_MAX/iConstWaveGraphFactor), cv::Scalar(0,0,255));
+        //mat.at<cv::Vec3b>(yDiff, x) = cv::Vec3b(0,255,0);
+    	cv::line(mat,cv::Point(x,yDiff),cv::Point(x,3*INT16_MAX/iConstWaveGraphFactor), cv::Scalar(0,255,0));
 
         mat.at<cv::Vec3b>(INT16_MAX/iConstWaveGraphFactor, x) = cv::Vec3b(255,0,0);
         mat.at<cv::Vec3b>(3*INT16_MAX/iConstWaveGraphFactor, x) = cv::Vec3b(255,0,0);
