@@ -4,17 +4,20 @@
 #include <string>
 #include <cstdint>
 #include <list>
+#include <tuple>
 using namespace std;
 
 #pragma once
 
 class WatorBaseL {
 public:
-  virtual void layout();
+  
+  virtual void layout(void);
+  virtual int16_t width(void);
   void name(const string &name);
   int depth(void);
-  virtual void forward();
-
+  
+  virtual void forward(void);
   virtual int16_t active(void);
   virtual int16_t diactive(void);
 
@@ -32,8 +35,12 @@ class WatorInputL :public WatorBaseL {
 public:
   WatorInputL();
   void addTop(WatorBaseLPtr top);
-  virtual void layout();
-  virtual void forward();
+  virtual void layout(void);
+  virtual int16_t width(void);
+
+  virtual void forward(void);
+  virtual int16_t active(void);
+  virtual int16_t diactive(void);
 protected:
   vector<WatorBaseLPtr> top_;
 private:
@@ -43,10 +50,15 @@ private:
 class WatorAudioWaveL :public WatorInputL {
 public:
   WatorAudioWaveL();
-  virtual void forward();
+
+  virtual int16_t width(void);
+
+  virtual void forward(void);
+  virtual int16_t active(void);
+  virtual int16_t diactive(void);
 protected:
   list<int16_t> blob_;
-  const int iMaxWaveLength_ = 1024*1024;
+  int iMaxWaveWidth_ = 1024*1024;
 private:
 };
 
@@ -55,7 +67,7 @@ class WatorOutputL :public WatorBaseL {
 public:
   WatorOutputL();
   void addButtom(WatorBaseLPtr buttom);
-  virtual void layout();
+  virtual void layout(void);
 protected:
   vector<WatorBaseLPtr> buttom_;
 };
@@ -66,19 +78,26 @@ public:
   WatorHiddenL();
   void addTop(WatorBaseLPtr top);
   void addButtom(WatorBaseLPtr buttom);
-  virtual void layout();
-  virtual void forward();
+  virtual void layout(void);
+  virtual void forward(void);
 protected:
   vector<WatorBaseLPtr> top_;
   vector<WatorBaseLPtr> buttom_;
+  
+  list<int16_t> blob_;
+  int iMaxWaveWidth_;
+  float active_ = 1.0;
+  float disactive_ = - 1.0;
+  int step_ = 2;
+  vector<int16_t> stepBuff_;
 };
 
 
 class WatorNet {
 public:
   WatorNet(WatorBaseLPtr entry);
-  void train();
-  void layout();
+  void train(void);
+  void layout(void);
 private:
   WatorBaseLPtr entry_;
 };
