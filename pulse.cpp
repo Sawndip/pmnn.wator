@@ -38,6 +38,13 @@ void WatorInputL::layout()
 }
 
 void WatorInputL::forward(){
+}
+
+
+WatorAudioWaveL::WatorAudioWaveL()
+:WatorInputL() {
+}
+void WatorAudioWaveL::forward(){
   auto waves = readWave("./waveform/myRecording03.wav");
   DUMP_VAR(waves.size());
   if(waves.empty()) {
@@ -56,9 +63,6 @@ void WatorInputL::forward(){
     }
   }
 }
-
-
-
 
 WatorOutputL::WatorOutputL()
   :WatorBaseL(){
@@ -96,6 +100,16 @@ void WatorHiddenL::layout()
   cout << name_ << endl;
   for(auto top:top_) {
     top->layout();
+  }
+}
+
+void WatorHiddenL::forward() {
+  //cout << name_ << endl;
+  auto buttom = buttom_.at(0);
+  auto a = buttom->active();
+  auto _a = buttom->diactive();
+  for(auto top:top_) {
+    top->forward();
   }
 }
 

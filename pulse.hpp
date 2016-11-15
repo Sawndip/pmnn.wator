@@ -14,6 +14,10 @@ public:
   void name(const string &name);
   int depth(void);
   virtual void forward();
+
+  virtual int16_t active(void);
+  virtual int16_t diactive(void);
+
 protected:
   WatorBaseL();
 protected:
@@ -32,11 +36,19 @@ public:
   virtual void forward();
 protected:
   vector<WatorBaseLPtr> top_;
+private:
+};
+
+
+class WatorAudioWaveL :public WatorInputL {
+public:
+  WatorAudioWaveL();
+  virtual void forward();
+protected:
   list<int16_t> blob_;
   const int iMaxWaveLength_ = 1024*1024;
 private:
 };
-
 
 
 class WatorOutputL :public WatorBaseL {
@@ -55,6 +67,7 @@ public:
   void addTop(WatorBaseLPtr top);
   void addButtom(WatorBaseLPtr buttom);
   virtual void layout();
+  virtual void forward();
 protected:
   vector<WatorBaseLPtr> top_;
   vector<WatorBaseLPtr> buttom_;

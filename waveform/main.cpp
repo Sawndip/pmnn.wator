@@ -18,7 +18,9 @@ using namespace std;
 vector<vector<int16_t>> readWave(const string &path);
 
 const unsigned long iConstWaveGraphWidth = 3600*5;
-const unsigned long iConstWaveGraphFactor = 50;
+const unsigned long iConstWaveRawGraphFactor = 50;
+const unsigned long iConstWaveDiffGraphFactor = 10;
+
 
 int main() {
     auto waves = readWave("./myRecording03.wav");
@@ -27,10 +29,13 @@ int main() {
         return 0;
     }
     auto wave = waves.begin();
+//	wave++;
     DUMP_VAR(wave->size());
     vector<int16_t> diffWave;
-    auto width = std::min(iConstWaveGraphWidth,wave->size() -1);
-    cv::Mat mat(4 * INT16_MAX/iConstWaveGraphFactor,width,CV_8UC3,cv::Scalar(255,255,255));
+    int16_t width = std::min(iConstWaveGraphWidth,wave->size() -1);
+	int16_t rawHeight = 2*(INT16_MAX/iConstWaveRawGraphFactor);
+	int16_t diffHeight = 2*(INT16_MAX/iConstWaveDiffGraphFactor);
+    cv::Mat mat(rawHeight + diffHeight ,width,CV_8UC3,cv::Scalar(255,255,255));
     cv::Mat white(mat);
     for(int i = 0;i < wave->size() -1;i++) {
         
@@ -39,32 +44,6 @@ int main() {
             //mat = white;
             mat = cv::Scalar(255,255,255);
         }
-        
-    
-        int32_t baseLineWav =  INT16_MAX/iConstWaveGraphFactor;
-        int32_t baseLineDiff =  3*INT16_MAX/iConstWaveGraphFactor;
-        auto diff = wave->at(i+1) - wave->at(i);
-        diffWave.push_back(diff);
-        //draw waveform
-        int yWave = (INT16_MAX + wave->at(i))/iConstWaveGraphFactor;
-        int yDiff = (3*INT16_MAX + diff)/iConstWaveGraphFactor;
-        if(yWave >= 2 * INT16_MAX/iConstWaveGraphFactor || yWave < 0) {
-            continue;
-        }
-        if(yDiff >= 4 * INT16_MAX/iConstWaveGraphFactor || yDiff < 2 * INT16_MAX/iConstWaveGraphFactor) {
-            continue;
-        }
-        int x = i % iConstWaveGraphWidth;
-        
-    	//mat.at<cv::Vec3b>(yWave, x) = cv::Vec3b(0,0,255);
-    	cv::line(mat,cv::Point(x,yWave),cv::Point(x,INT16_MAX/iConstWaveGraphFactor), cv::Scalar(0,0,255));
-        //mat.at<cv::Vec3b>(yDiff, x) = cv::Vec3b(0,255,0);
-    	cv::line(mat,cv::Point(x,yDiff),cv::Point(x,3*INT16_MAX/iConstWaveGraphFactor), cv::Scalar(0,255,0));
-
-        mat.at<cv::Vec3b>(INT16_MAX/iConstWaveGraphFactor, x) = cv::Vec3b(255,0,0);
-        mat.at<cv::Vec3b>(3*INT16_MAX/iConstWaveGraphFactor, x) = cv::Vec3b(255,0,0);
-        
-        
         if(i % iConstWaveGraphWidth == iConstWaveGraphWidth-1) {
             string path = "waveform/wave.out.";
             std::stringstream ss;
@@ -73,6 +52,37 @@ int main() {
             path += ".png";
             cv::imwrite( path,mat);
         }
+        
+    
+        int16_t baseLineWav =  rawHeight/2;
+        int16_t baseLineDiff =  rawHeight + diffHeight/2;
+        int16_t diff = wave->at(i+1) - wave->at(i);
+        diffWave.push_back(diff);
+        //draw waveform
+    	int16_t yWave = (int16_t)wave->at(i) / (int16_t)iConstWaveRawGraphFactor + baseLineWav;
+    	int16_t yDiff = (int16_t)diff/(int16_t)iConstWaveDiffGraphFactor + baseLineDiff;
+        if(yWave >= rawHeight || yWave < 0) {
+        	DUMP_VAR(yWave);
+        	DUMP_VAR(rawHeight);
+            continue;
+        }
+        if(yDiff >= rawHeight + diffHeight || yDiff < rawHeight) {
+        	DUMP_VAR(yDiff);
+        	DUMP_VAR(rawHeight);
+        	DUMP_VAR(rawHeight + diffHeight);
+            continue;
+        }
+        int x = i % iConstWaveGraphWidth;
+        
+    	//mat.at<cv::Vec3b>(yWave, x) = cv::Vec3b(0,0,255);
+    	cv::line(mat,cv::Point(x,yWave),cv::Point(x,baseLineWav), cv::Scalar(0,0,255));
+        //mat.at<cv::Vec3b>(yDiff, x) = cv::Vec3b(0,255,0);
+    	cv::line(mat,cv::Point(x,yDiff),cv::Point(x,baseLineDiff), cv::Scalar(0,255,0));
+
+        mat.at<cv::Vec3b>(baseLineWav, x) = cv::Vec3b(0,0,0);
+        mat.at<cv::Vec3b>(baseLineDiff, x) = cv::Vec3b(0,0,0);
+        
+        
     }
     DUMP_VAR(diffWave.size());
     return 0;
