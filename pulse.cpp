@@ -172,6 +172,20 @@ void WatorHiddenL::forward(void) {
   }
 }
 
+int16_t WatorHiddenL::active(void) {
+  if(blob_.size()>1) {
+    auto it = blob_.rbegin();
+    return (*it + *it++)/2;
+  }
+  return 0;
+}
+int16_t WatorHiddenL::diactive(void) {
+  if(blob_.size()>1) {
+    auto it = blob_.rbegin();
+    return *it - *it++;
+  }
+  return 0;
+}
 
 WatorNet::WatorNet(WatorBaseLPtr entry)
   :entry_(entry) {
