@@ -75,9 +75,9 @@ void WatorAudioWaveL::forward(void){
   auto wave = waves.begin();
   DUMP_VAR(wave->size());
   for(int i = 0;i < wave->size() -1;i++) {
-    blob_.push_front(wave->at(i));
+    blob_.push_back(wave->at(i));
     if(blob_.size() > iMaxWaveWidth_) {
-      blob_.pop_back();
+      blob_.pop_front();
     }
     for(auto top:top_) {
       top->forward();
@@ -86,14 +86,14 @@ void WatorAudioWaveL::forward(void){
 }
 int16_t WatorAudioWaveL::active(void) {
   if(blob_.size()>1) {
-    auto it = blob_.begin();
+    auto it = blob_.rbegin();
     return (*it + *it++)/2;
   }
   return 0;
 }
 int16_t WatorAudioWaveL::diactive(void) {
   if(blob_.size()>1) {
-    auto it = blob_.begin();
+    auto it = blob_.rbegin();
     return *it - *it++;
   }
   return 0;
@@ -161,9 +161,9 @@ void WatorHiddenL::forward(void) {
   int16_t ave = accumulate(stepBuff_.begin(),stepBuff_.end(),0);
   ave /= stepBuff_.size();
   stepBuff_.clear();
-  blob_.push_front(ave);
+  blob_.push_back(ave);
   if( blob_.size()> iMaxWaveWidth_) {
-    blob_.pop_back();
+    blob_.pop_front();
   }
   DUMP_VAR(name_);
   DUMP_VAR(ave);
