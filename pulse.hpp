@@ -43,6 +43,7 @@ public:
   virtual int16_t diactive(void);
 protected:
   vector<WatorBaseLPtr> top_;
+  int16_t iThreshold_ = 0;
 private:
 };
 
@@ -94,6 +95,8 @@ protected:
   float disactive_ = - 1.0;
   int step_ = 2;
   vector<int16_t> stepBuff_;
+
+  int16_t iThreshold_ = 0;
 };
 
 
