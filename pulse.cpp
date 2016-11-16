@@ -6,7 +6,7 @@
 using namespace std;
 #include "pulse.hpp"
 #include "wave.hpp"
-#define DUMP_VAR(x) {cout << #x "=<" << x << ">" << endl;}
+#define DUMP_VAR(x) {cout << __LINE__ << ":" #x "=<" << x << ">" << endl;}
 
 
 WatorBaseL::WatorBaseL(){
@@ -26,10 +26,10 @@ void WatorBaseL::forward(void){
 int16_t WatorBaseL::active(void) {
   return 0;
 }
-int16_t WatorBaseL::diactive(void) {
-  return 0;
+bool WatorBaseL::diactive(void) {
+  return true;
 }
-int16_t WatorBaseL::width(void) {
+int WatorBaseL::width(void) {
   return 0;
 }
 
@@ -54,10 +54,10 @@ void WatorInputL::forward(void){
 int16_t WatorInputL::active(void) {
   return 0;
 }
-int16_t WatorInputL::diactive(void) {
-  return 0;
+bool WatorInputL::diactive(void) {
+  return true;
 }
-int16_t WatorInputL::width(void) {
+int WatorInputL::width(void) {
   return 0;
 }
 
@@ -76,7 +76,6 @@ void WatorAudioWaveL::forward(void){
   DUMP_VAR(wave->size());
   for(int i = 0;i < wave->size() -1;i++) {
     blob_.push_back(wave->at(i));
-    intermediate_.push();
     if(blob_.size() > iMaxWaveWidth_) {
       blob_.pop_front();
     }
@@ -92,15 +91,47 @@ int16_t WatorAudioWaveL::active(void) {
   }
   return 0;
 }
-int16_t WatorAudioWaveL::diactive(void) {
+bool WatorAudioWaveL::diactive(void) {
   if(blob_.size()>1) {
     auto it = blob_.rbegin();
-    return *it - *it++;
+    int diff = *it;
+    //DUMP_VAR(*it);
+    diff -= *(++it);
+    //DUMP_VAR(*it);
+    uint16_t diffABS = ::abs(diff);
+    //DUMP_VAR(diff);
+    //DUMP_VAR(diffABS);
+    diffs_.push_back(diffABS);
+      //DUMP_VAR(diffs_.size());
+      //DUMP_VAR(iMaxWaveWidth_);
+      if(diffs_.size() >iMaxWaveWidth_) {
+          diffs_.pop_front();
+      }
+      std::sort(diffs_.begin(),diffs_.end(),std::greater<uint16_t>());
+      //DUMP_VAR(interNumber_);
+      if(diffs_.size() > interNumber_) {
+          auto last = diffs_[interNumber_];
+          //DUMP_VAR(last);
+          //DUMP_VAR(diffABS);
+          if(diffABS > last) {
+              return true;
+          }
+      }
+      return false;
   }
-  return 0;
+  return false;
 }
-int16_t WatorAudioWaveL::width(void) {
+
+int WatorAudioWaveL::width(void) {
+  //DUMP_VAR(iMaxWaveWidth_);
   return iMaxWaveWidth_;
+}
+
+void WatorAudioWaveL::layout(void) {
+    cout << name_ << ":m[" << iMaxWaveWidth_ << "]:i[" << interNumber_ << "]" << endl;
+    for(auto top:top_) {
+        top->layout();
+    }
 }
 
 
@@ -133,14 +164,21 @@ void WatorHiddenL::addButtom(WatorBaseLPtr buttom)
 {
   buttom_.push_back(buttom);
   depth_ = buttom->depth() +1;
-  iMaxWaveWidth_ = buttom->width()/step_;
 }
 void WatorHiddenL::layout(void)
 {
+    auto buttom = buttom_.at(0);
+    auto width = buttom->width();
+    //DUMP_VAR(width);
+    //DUMP_VAR(step_);
+    iMaxWaveWidth_ = width/step_;
+    //DUMP_VAR(iMaxWaveWidth_);
+    interNumber_ = iMaxWaveWidth_/iInterActiveRateReciprocal;
+
   for(int i = 0 ;i < depth_ ;i++) {
     cout << "  ";
   }
-  cout << name_ << endl;
+  cout << name_ << ":m[" << iMaxWaveWidth_ << "]:i[" << interNumber_ << "]" << endl;
   for(auto top:top_) {
     top->layout();
   }
@@ -150,15 +188,20 @@ void WatorHiddenL::forward(void) {
   //cout << name_ << endl;
   auto buttom = buttom_.at(0);
   int16_t a = buttom->active();
-  int16_t _a = buttom->diactive();
-  //DUMP_VAR(a);
-  //DUMP_VAR(_a);
+  bool _a = buttom->diactive();
+    if(_a) {
+  DUMP_VAR(a);
+  DUMP_VAR(_a);
+    }
   int16_t blob = a * active_ + disactive_ * _a;
   //DUMP_VAR(blob);
   stepBuff_.push_back(blob);
   if(stepBuff_.size() < step_) {
     return;
   }
+  
+  //intermediate_.push();
+
   int16_t ave = accumulate(stepBuff_.begin(),stepBuff_.end(),0);
   ave /= stepBuff_.size();
   stepBuff_.clear();
@@ -166,8 +209,8 @@ void WatorHiddenL::forward(void) {
   if( blob_.size()> iMaxWaveWidth_) {
     blob_.pop_front();
   }
-  DUMP_VAR(name_);
-  DUMP_VAR(ave);
+  //DUMP_VAR(name_);
+  //DUMP_VAR(ave);
   for(auto top:top_) {
     top->forward();
   }
@@ -180,13 +223,19 @@ int16_t WatorHiddenL::active(void) {
   }
   return 0;
 }
-int16_t WatorHiddenL::diactive(void) {
+bool WatorHiddenL::diactive(void) {
   if(blob_.size()>1) {
     auto it = blob_.rbegin();
     return *it - *it++;
   }
-  return 0;
+  return false;
 }
+
+int WatorHiddenL::width(void) {
+    return iMaxWaveWidth_;
+}
+
+
 
 WatorNet::WatorNet(WatorBaseLPtr entry)
   :entry_(entry) {
