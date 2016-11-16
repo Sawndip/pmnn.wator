@@ -25,7 +25,8 @@ protected:
   WatorBaseL();
 protected:
   string name_;
-  int depth_ = 0;
+  int16_t depth_ = 0;
+  list<bool> intermediate_ = 0;
 };
 
 typedef shared_ptr<WatorBaseL> WatorBaseLPtr;
