@@ -80,6 +80,10 @@ public:
   void addButtom(WatorBaseLPtr buttom);
   virtual void layout(void);
   virtual void forward(void);
+
+  virtual int16_t active(void);
+  virtual int16_t diactive(void);
+
 protected:
   vector<WatorBaseLPtr> top_;
   vector<WatorBaseLPtr> buttom_;
