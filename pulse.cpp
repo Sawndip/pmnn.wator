@@ -76,6 +76,7 @@ void WatorAudioWaveL::forward(void){
   DUMP_VAR(wave->size());
   for(int i = 0;i < wave->size() -1;i++) {
     blob_.push_back(wave->at(i));
+    intermediate_.push();
     if(blob_.size() > iMaxWaveWidth_) {
       blob_.pop_front();
     }
