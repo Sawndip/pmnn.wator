@@ -18,6 +18,8 @@ public:
   
   virtual void layout(void);
   virtual int width(void);
+  virtual void snapshot(void);
+  
   void name(const string &name);
   int depth(void);
   
@@ -43,6 +45,7 @@ public:
   void addTop(WatorBaseLPtr top);
   virtual void layout(void);
   virtual int width(void);
+    virtual void snapshot(void);
 
   virtual void forward(void);
   virtual int16_t active(void);
@@ -60,18 +63,23 @@ public:
 
   virtual void layout(void);
   virtual int width(void);
-  virtual void forward(void);
+    virtual void snapshot(void);
+
+    virtual void forward(void);
   virtual int16_t active(void);
   virtual bool diactive(void);
 protected:
 private:
-    list<int16_t> blob_;
-    //int iMaxWaveWidth_ = 1024*1024;
-    int iMaxWaveWidth_ = 96*1024;
+    deque<int16_t> blob_;
+    int iMaxWaveWidth_ = 1024*1024;
+    //int iMaxWaveWidth_ = 96*1024;
     int interNumber_ = iMaxWaveWidth_/iInterActiveRateReciprocal;
     deque<uint16_t> diffs_;
     list<bool> intermediate_;
-    int16_t iThreshold_ = 0;
+    double iThreshold_ = 0;
+    
+    // dump
+    uint16_t maxHeight_ = 0;
 };
 
 
@@ -90,9 +98,11 @@ public:
   WatorHiddenL();
   void addTop(WatorBaseLPtr top);
   void addButtom(WatorBaseLPtr buttom);
+
   virtual void layout(void);
   virtual void forward(void);
     virtual int width(void);
+    virtual void snapshot(void);
 
   virtual int16_t active(void);
   virtual bool diactive(void);
@@ -101,7 +111,7 @@ protected:
   vector<WatorBaseLPtr> top_;
   vector<WatorBaseLPtr> buttom_;
   
-  list<int16_t> blob_;
+  deque<int16_t> blob_;
   int iMaxWaveWidth_;
   int interNumber_;
   
@@ -111,7 +121,11 @@ protected:
   vector<int16_t> stepBuff_;
 
   list<bool> intermediate_;
+  deque<uint16_t> diffs_;
   int16_t iThreshold_ = 0;
+    
+  // dump
+  uint16_t maxHeight_ = 0;
 };
 
 
@@ -120,6 +134,7 @@ public:
   WatorNet(WatorBaseLPtr entry);
   void train(void);
   void layout(void);
+  void snapshot(void);
 private:
   WatorBaseLPtr entry_;
 };
