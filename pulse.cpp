@@ -18,7 +18,9 @@ using namespace std;
 #define DUMP_VAR(x) {cout << __LINE__ << ":" #x "=<" << x << ">" << endl;}
 
 
-const unsigned long iConstWaveGraphWidth = 3600;
+const unsigned long iConstWaveGraphWidth = 3600*5;
+
+const float iConstDeativeFactor = 1.25;
 
 
 WatorBaseL::WatorBaseL(){
@@ -83,7 +85,7 @@ WatorAudioWaveL::WatorAudioWaveL()
 :WatorInputL() {
 }
 void WatorAudioWaveL::forward(void){
-  auto waves = readWave("./waveform/myRecording03.wav");
+  auto waves = readWave("./waveform/myRecording00.wav");
   DUMP_VAR(waves.size());
   if(waves.empty()) {
     return ;
@@ -107,7 +109,7 @@ void WatorAudioWaveL::forward(void){
 int16_t WatorAudioWaveL::active(void) {
   if(blob_.size()>1) {
     auto it = blob_.rbegin();
-    return (*it + *it++)/2;
+    return (*it + *(++it))/2;
   }
   return 0;
 }
@@ -129,7 +131,7 @@ bool WatorAudioWaveL::diactive(void) {
           iThreshold_ -= (double)diffs_.front()/(double)diffs_.size();
           diffs_.pop_front();
       }
-      if(diffABS > iThreshold_) {
+      if(diffABS > iThreshold_ *  iConstDeativeFactor) {
           return true;
       }
 #if 0
@@ -161,9 +163,11 @@ void WatorAudioWaveL::layout(void) {
     }
 }
 void WatorAudioWaveL::snapshot(void){
+    DUMP_VAR(name_);
     DUMP_VAR(maxHeight_);
+    DUMP_VAR(blob_.size());
     int height = 200;
-    int width = std::min(iConstWaveGraphWidth,blob_.size() -1);;
+    int width = std::min(iConstWaveGraphWidth,blob_.size());;
     cv::Mat mat( height ,width,CV_8UC3,cv::Scalar(255,255,255));
     for(int i = 0;i < blob_.size();i++) {
         
@@ -283,7 +287,7 @@ void WatorHiddenL::forward(void) {
 int16_t WatorHiddenL::active(void) {
   if(blob_.size()>1) {
     auto it = blob_.rbegin();
-    return (*it + *it++)/2;
+    return (*it + *(++it))/2;
   }
   return 0;
 }
@@ -305,7 +309,7 @@ bool WatorHiddenL::diactive(void) {
             iThreshold_ -= (double)diffs_.front()/(double)diffs_.size();
             diffs_.pop_front();
         }
-        if(diffABS > iThreshold_) {
+        if(diffABS > iThreshold_ * iConstDeativeFactor) {
             return true;
         }
 #if 0
@@ -329,9 +333,11 @@ int WatorHiddenL::width(void) {
     return iMaxWaveWidth_;
 }
 void WatorHiddenL::snapshot(void){
+    DUMP_VAR(name_);
     DUMP_VAR(maxHeight_);
+    DUMP_VAR(blob_.size());
     int height = 200;
-    int width = std::min(iConstWaveGraphWidth,blob_.size() -1);;
+    int width = std::min(iConstWaveGraphWidth,blob_.size());;
     cv::Mat mat( height ,width,CV_8UC3,cv::Scalar(255,255,255));
     for(int i = 0;i < blob_.size();i++) {
         
