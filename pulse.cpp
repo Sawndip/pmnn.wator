@@ -20,7 +20,7 @@ using namespace std;
 
 const unsigned long iConstWaveGraphWidth = 3600*5;
 
-const float iConstDeativeFactor = 1.25;
+const float iConstDeativeFactor = 3.0;
 
 
 WatorBaseL::WatorBaseL(){
@@ -85,7 +85,7 @@ WatorAudioWaveL::WatorAudioWaveL()
 :WatorInputL() {
 }
 void WatorAudioWaveL::forward(void){
-  auto waves = readWave("./waveform/myRecording00.wav");
+  auto waves = readWave("./waveform/myRecording02.wav");
   DUMP_VAR(waves.size());
   if(waves.empty()) {
     return ;
@@ -132,21 +132,22 @@ bool WatorAudioWaveL::diactive(void) {
           diffs_.pop_front();
       }
       if(diffABS > iThreshold_ *  iConstDeativeFactor) {
+          //DUMP_VAR(iThreshold_);
+          intermediate_.push_back(true);
+          if(intermediate_.size() >iMaxWaveWidth_) {
+            intermediate_.pop_front();
+          }
           return true;
       }
-#if 0
-      std::sort(diffs_.begin(),diffs_.end(),std::greater<uint16_t>());
-      //DUMP_VAR(interNumber_);
-      if(diffs_.size() > interNumber_) {
-          auto last = diffs_[interNumber_];
-          //DUMP_VAR(last);
-          //DUMP_VAR(diffABS);
-          if(diffABS > last) {
-              return true;
-          }
+      intermediate_.push_back(false);
+      if(intermediate_.size() >iMaxWaveWidth_) {
+        intermediate_.pop_front();
       }
-#endif
       return false;
+  }
+  intermediate_.push_back(false);
+  if(intermediate_.size() >iMaxWaveWidth_) {
+    intermediate_.pop_front();
   }
   return false;
 }
@@ -167,8 +168,9 @@ void WatorAudioWaveL::snapshot(void){
     DUMP_VAR(maxHeight_);
     DUMP_VAR(blob_.size());
     int height = 200;
+    int heightDiff = 10;
     int width = std::min(iConstWaveGraphWidth,blob_.size());;
-    cv::Mat mat( height ,width,CV_8UC3,cv::Scalar(255,255,255));
+    cv::Mat mat( height + heightDiff ,width,CV_8UC3,cv::Scalar(255,255,255));
     for(int i = 0;i < blob_.size();i++) {
         
         auto slip = i / iConstWaveGraphWidth;
@@ -187,10 +189,15 @@ void WatorAudioWaveL::snapshot(void){
             cv::imwrite( path,mat);
         }
         int16_t baseLineWav =  height/2;
-        int16_t yWave = (int16_t)( blob_.at(i)*height/ maxHeight_)  + baseLineWav;
+        int16_t yWave = (int16_t)( blob_.at(i)*height/ (2*maxHeight_))  + baseLineWav;
         int x = i % iConstWaveGraphWidth;
         cv::line(mat,cv::Point(x,yWave),cv::Point(x,baseLineWav), cv::Scalar(0,0,255));
         mat.at<cv::Vec3b>(baseLineWav, x) = cv::Vec3b(0,0,0);
+
+        int16_t yDiff = height + heightDiff/2;
+        if(i < intermediate_.size() && intermediate_.at(i)) {
+           mat.at<cv::Vec3b>(yDiff, x) = cv::Vec3b(0,255,0);
+        }
     }
     for(auto top:top_) {
         top->snapshot();
@@ -264,8 +271,6 @@ void WatorHiddenL::forward(void) {
     return;
   }
   
-  //intermediate_.push();
-
   int16_t ave = accumulate(stepBuff_.begin(),stepBuff_.end(),0);
   ave /= stepBuff_.size();
   stepBuff_.clear();
@@ -310,21 +315,23 @@ bool WatorHiddenL::diactive(void) {
             diffs_.pop_front();
         }
         if(diffABS > iThreshold_ * iConstDeativeFactor) {
-            return true;
-        }
-#if 0
-        std::sort(diffs_.begin(),diffs_.end(),std::greater<uint16_t>());
-        //DUMP_VAR(interNumber_);
-        if(diffs_.size() > interNumber_) {
-            auto last = diffs_[interNumber_];
-            //DUMP_VAR(last);
-            //DUMP_VAR(diffABS);
-            if(diffABS > last) {
-                return true;
+            //DUMP_VAR(name_);
+            //DUMP_VAR(iThreshold_);
+            intermediate_.push_back(true);
+            if(intermediate_.size() >iMaxWaveWidth_) {
+              intermediate_.pop_front();
             }
+           return true;
         }
-#endif
+        intermediate_.push_back(false);
+        if(intermediate_.size() >iMaxWaveWidth_) {
+          intermediate_.pop_front();
+        }
         return false;
+    }
+    intermediate_.push_back(false);
+    if(intermediate_.size() >iMaxWaveWidth_) {
+      intermediate_.pop_front();
     }
     return false;
 }
@@ -337,8 +344,9 @@ void WatorHiddenL::snapshot(void){
     DUMP_VAR(maxHeight_);
     DUMP_VAR(blob_.size());
     int height = 200;
+    int heightDiff = 10;
     int width = std::min(iConstWaveGraphWidth,blob_.size());;
-    cv::Mat mat( height ,width,CV_8UC3,cv::Scalar(255,255,255));
+    cv::Mat mat( height+heightDiff ,width,CV_8UC3,cv::Scalar(255,255,255));
     for(int i = 0;i < blob_.size();i++) {
         
         auto slip = i / iConstWaveGraphWidth;
@@ -357,10 +365,15 @@ void WatorHiddenL::snapshot(void){
             cv::imwrite( path,mat);
         }
         int16_t baseLineWav =  height/2;
-        int16_t yWave = (int16_t)( blob_.at(i)*height/ maxHeight_)  + baseLineWav;
+        int16_t yWave = (int16_t)( blob_.at(i)*height/ (2*maxHeight_))  + baseLineWav;
         int x = i % iConstWaveGraphWidth;
         cv::line(mat,cv::Point(x,yWave),cv::Point(x,baseLineWav), cv::Scalar(0,0,255));
         mat.at<cv::Vec3b>(baseLineWav, x) = cv::Vec3b(0,0,0);
+
+        int16_t yDiff = height + heightDiff/2;
+        if(i < intermediate_.size() && intermediate_.at(i)) {
+           mat.at<cv::Vec3b>(yDiff, x) = cv::Vec3b(0,255,0);
+        }
     }
     for(auto top:top_) {
         top->snapshot();

@@ -71,11 +71,11 @@ public:
 protected:
 private:
     deque<int16_t> blob_;
-    int iMaxWaveWidth_ = 1024*1024;
-    //int iMaxWaveWidth_ = 96*1024;
+    int iMaxWaveWidth_ = 10*48*1024;
+    //int iMaxWaveWidth_ = 5*48*1024;
     int interNumber_ = iMaxWaveWidth_/iInterActiveRateReciprocal;
     deque<uint16_t> diffs_;
-    list<bool> intermediate_;
+    deque<bool> intermediate_;
     double iThreshold_ = 0;
     
     // dump
@@ -120,7 +120,7 @@ protected:
   int step_ = 2;
   vector<int16_t> stepBuff_;
 
-  list<bool> intermediate_;
+  deque<bool> intermediate_;
   deque<uint16_t> diffs_;
   int16_t iThreshold_ = 0;
     
