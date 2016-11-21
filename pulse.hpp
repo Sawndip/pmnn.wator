@@ -52,7 +52,7 @@ public:
   virtual bool diactive(void);
 protected:
   vector<WatorBaseLPtr> top_;
-  int16_t iThreshold_ = 0;
+  double dThreshold_ = 0.0;
 private:
 };
 
@@ -71,12 +71,13 @@ public:
 protected:
 private:
     deque<int16_t> blob_;
-    int iMaxWaveWidth_ = 10*48*1024;
+    int iMaxWaveWidth_ = 100*48*1024;
     //int iMaxWaveWidth_ = 5*48*1024;
     int interNumber_ = iMaxWaveWidth_/iInterActiveRateReciprocal;
     deque<uint16_t> diffs_;
     deque<bool> intermediate_;
-    double iThreshold_ = 0;
+    double dThreshold_ = 0.0;
+    const double iConstDeativeFactor = 0.5;
     
     // dump
     uint16_t maxHeight_ = 0;
@@ -122,7 +123,8 @@ protected:
 
   deque<bool> intermediate_;
   deque<uint16_t> diffs_;
-  int16_t iThreshold_ = 0;
+  double dThreshold_ = 0.0;
+  const double iConstDeativeFactor = 1.0;
     
   // dump
   uint16_t maxHeight_ = 0;

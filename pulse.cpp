@@ -20,8 +20,6 @@ using namespace std;
 
 const unsigned long iConstWaveGraphWidth = 3600*5;
 
-const float iConstDeativeFactor = 3.0;
-
 
 WatorBaseL::WatorBaseL(){
 }
@@ -85,7 +83,7 @@ WatorAudioWaveL::WatorAudioWaveL()
 :WatorInputL() {
 }
 void WatorAudioWaveL::forward(void){
-  auto waves = readWave("./waveform/myRecording02.wav");
+  auto waves = readWave("./waveform/myRecording09.wav");
   DUMP_VAR(waves.size());
   if(waves.empty()) {
     return ;
@@ -109,7 +107,7 @@ void WatorAudioWaveL::forward(void){
 int16_t WatorAudioWaveL::active(void) {
   if(blob_.size()>1) {
     auto it = blob_.rbegin();
-    return (*it + *(++it))/2;
+    return (*it)*2/3 + *(++it)/3;
   }
   return 0;
 }
@@ -126,13 +124,14 @@ bool WatorAudioWaveL::diactive(void) {
     diffs_.push_back(diffABS);
       //DUMP_VAR(diffs_.size());
       //DUMP_VAR(iMaxWaveWidth_);
-      iThreshold_ += (double)diffABS/(double)diffs_.size();
+      dThreshold_ += (double)diffABS/(double)diffs_.size();
       if(diffs_.size() >iMaxWaveWidth_) {
-          iThreshold_ -= (double)diffs_.front()/(double)diffs_.size();
+          dThreshold_ -= (double)diffs_.front()/(double)diffs_.size();
           diffs_.pop_front();
       }
-      if(diffABS > iThreshold_ *  iConstDeativeFactor) {
-          //DUMP_VAR(iThreshold_);
+      if(diffABS > dThreshold_ *  iConstDeativeFactor) {
+          DUMP_VAR(diffABS);
+          DUMP_VAR(dThreshold_);
           intermediate_.push_back(true);
           if(intermediate_.size() >iMaxWaveWidth_) {
             intermediate_.pop_front();
@@ -292,7 +291,7 @@ void WatorHiddenL::forward(void) {
 int16_t WatorHiddenL::active(void) {
   if(blob_.size()>1) {
     auto it = blob_.rbegin();
-    return (*it + *(++it))/2;
+    return (*it)*2/3 + *(++it)/3;
   }
   return 0;
 }
@@ -309,14 +308,14 @@ bool WatorHiddenL::diactive(void) {
         diffs_.push_back(diffABS);
         //DUMP_VAR(diffs_.size());
         //DUMP_VAR(iMaxWaveWidth_);
-        iThreshold_ += (double)diffABS/(double)diffs_.size();
+        dThreshold_ += (double)diffABS/(double)diffs_.size();
         if(diffs_.size() >iMaxWaveWidth_) {
-            iThreshold_ -= (double)diffs_.front()/(double)diffs_.size();
+            dThreshold_ -= (double)diffs_.front()/(double)diffs_.size();
             diffs_.pop_front();
         }
-        if(diffABS > iThreshold_ * iConstDeativeFactor) {
+        if(diffABS > dThreshold_ * iConstDeativeFactor) {
             //DUMP_VAR(name_);
-            //DUMP_VAR(iThreshold_);
+            //DUMP_VAR(dThreshold_);
             intermediate_.push_back(true);
             if(intermediate_.size() >iMaxWaveWidth_) {
               intermediate_.pop_front();
