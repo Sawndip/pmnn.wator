@@ -64,6 +64,7 @@ public:
   virtual void layout(void);
   virtual int width(void);
     virtual void snapshot(void);
+    void setDAF(double factor);
 
     virtual void forward(void);
   virtual int16_t active(void);
@@ -77,7 +78,7 @@ private:
     deque<uint16_t> diffs_;
     deque<bool> intermediate_;
     double dThreshold_ = 0.0;
-    const double iConstDeativeFactor = 0.5;
+    double dDeativeFactor_ = 1.0;
     
     // dump
     uint16_t maxHeight_ = 0;
@@ -107,6 +108,8 @@ public:
 
   virtual int16_t active(void);
   virtual bool diactive(void);
+  
+    void setDAF(double factor);
 
 protected:
   vector<WatorBaseLPtr> top_;
@@ -124,7 +127,7 @@ protected:
   deque<bool> intermediate_;
   deque<uint16_t> diffs_;
   double dThreshold_ = 0.0;
-  const double iConstDeativeFactor = 1.0;
+  double dDeativeFactor_ = 1.0;
     
   // dump
   uint16_t maxHeight_ = 0;

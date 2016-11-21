@@ -129,7 +129,7 @@ bool WatorAudioWaveL::diactive(void) {
           dThreshold_ -= (double)diffs_.front()/(double)diffs_.size();
           diffs_.pop_front();
       }
-      if(diffABS > dThreshold_ *  iConstDeativeFactor) {
+      if(diffABS > dThreshold_ *  dDeativeFactor_) {
           DUMP_VAR(diffABS);
           DUMP_VAR(dThreshold_);
           intermediate_.push_back(true);
@@ -149,6 +149,10 @@ bool WatorAudioWaveL::diactive(void) {
     intermediate_.pop_front();
   }
   return false;
+}
+
+void WatorAudioWaveL::setDAF(double factor){
+    dDeativeFactor_ = factor;
 }
 
 int WatorAudioWaveL::width(void) {
@@ -313,7 +317,7 @@ bool WatorHiddenL::diactive(void) {
             dThreshold_ -= (double)diffs_.front()/(double)diffs_.size();
             diffs_.pop_front();
         }
-        if(diffABS > dThreshold_ * iConstDeativeFactor) {
+        if(diffABS > dThreshold_ * dDeativeFactor_) {
             //DUMP_VAR(name_);
             //DUMP_VAR(dThreshold_);
             intermediate_.push_back(true);
@@ -334,6 +338,10 @@ bool WatorHiddenL::diactive(void) {
     }
     return false;
 }
+void WatorHiddenL::setDAF(double factor){
+    dDeativeFactor_ = factor;
+}
+
 
 int WatorHiddenL::width(void) {
     return iMaxWaveWidth_;
