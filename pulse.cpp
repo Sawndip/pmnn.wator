@@ -114,24 +114,27 @@ int16_t WatorAudioWaveL::active(void) {
 bool WatorAudioWaveL::diactive(void) {
   if(blob_.size()>1) {
     auto it = blob_.rbegin();
-    int diff = *it;
+    double diff = *it;
     //DUMP_VAR(*it);
-    diff -= *(++it);
+    diff -= *(it+1);
     //DUMP_VAR(*it);
-    uint16_t diffABS = ::abs(diff);
+    double diffABS = std::abs(diff);
+    double sum = std::abs(*it);
+    sum += std::abs(*(it+1));
+    sum += 1.0;
     //DUMP_VAR(diff);
     //DUMP_VAR(diffABS);
     diffs_.push_back(diffABS);
       //DUMP_VAR(diffs_.size());
       //DUMP_VAR(iMaxWaveWidth_);
-      dThreshold_ += (double)diffABS/(double)diffs_.size();
+      dThreshold_ += (double)diffABS/(sum *(double)diffs_.size());
       if(diffs_.size() >iMaxWaveWidth_) {
           dThreshold_ -= (double)diffs_.front()/(double)diffs_.size();
           diffs_.pop_front();
       }
       if(diffABS > dThreshold_ *  dDeativeFactor_) {
-          DUMP_VAR(diffABS);
-          DUMP_VAR(dThreshold_);
+          //DUMP_VAR(diffABS);
+          //DUMP_VAR(dThreshold_);
           intermediate_.push_back(true);
           if(intermediate_.size() >iMaxWaveWidth_) {
             intermediate_.pop_front();
@@ -276,12 +279,24 @@ void WatorHiddenL::forward(void) {
   
   int16_t ave = accumulate(stepBuff_.begin(),stepBuff_.end(),0);
   ave /= stepBuff_.size();
+  
+  uint16_t max = 0;
+  int16_t vMax = stepBuff_[0];
+  
+  for(auto &val: stepBuff_) {
+      if(std::abs(val) > max) {
+          max = std::abs(val);
+          vMax = val;
+      }
+  }
   stepBuff_.clear();
-  blob_.push_back(ave);
+//  blob_.push_back(ave);
+    blob_.push_back(vMax);
   if( blob_.size()> iMaxWaveWidth_) {
     blob_.pop_front();
   }
-    if(::abs(ave) > maxHeight_) {
+//    if(::abs(ave) > maxHeight_) {
+    if(::abs(vMax) > maxHeight_) {
         maxHeight_ = ::abs(ave);
     }
     
@@ -302,17 +317,20 @@ int16_t WatorHiddenL::active(void) {
 bool WatorHiddenL::diactive(void) {
     if(blob_.size()>1) {
         auto it = blob_.rbegin();
-        int diff = *it;
+        double diff = *it;
         //DUMP_VAR(*it);
-        diff -= *(++it);
+        diff -= *(it+1);
+        double sum = std::abs(*it);
+        sum += std::abs(*(it+1));
+        sum += 1.0;
         //DUMP_VAR(*it);
-        uint16_t diffABS = ::abs(diff);
+        double diffABS = std::abs(diff);
         //DUMP_VAR(diff);
         //DUMP_VAR(diffABS);
         diffs_.push_back(diffABS);
         //DUMP_VAR(diffs_.size());
         //DUMP_VAR(iMaxWaveWidth_);
-        dThreshold_ += (double)diffABS/(double)diffs_.size();
+        dThreshold_ += (double)diffABS/(sum * (double)diffs_.size());
         if(diffs_.size() >iMaxWaveWidth_) {
             dThreshold_ -= (double)diffs_.front()/(double)diffs_.size();
             diffs_.pop_front();
