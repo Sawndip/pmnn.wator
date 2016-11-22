@@ -71,9 +71,11 @@ public:
   virtual bool diactive(void);
 protected:
 private:
+    void forwardOneWave(const string &path);
+private:
     deque<int16_t> blob_;
-    int iMaxWaveWidth_ = 100*48*1024;
-    //int iMaxWaveWidth_ = 5*48*1024;
+    //int iMaxWaveWidth_ = 100*48*1024;
+    int iMaxWaveWidth_ = 10*48*1024;
     int interNumber_ = iMaxWaveWidth_/iInterActiveRateReciprocal;
     deque<uint16_t> diffs_;
     deque<bool> intermediate_;

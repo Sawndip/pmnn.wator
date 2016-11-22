@@ -65,17 +65,17 @@ int main() {
   out->addButtom(hide10);
     
     
-    audio->setDAF(400.0);
-    hide1->setDAF(400.0);
-    hide2->setDAF(400.0);
-    hide3->setDAF(400.0);
-    hide4->setDAF(400.0);
-    hide5->setDAF(400.0);
-    hide6->setDAF(400.0);
-    hide7->setDAF(400.0);
-    hide8->setDAF(400.0);
-    hide9->setDAF(400.0);
-    hide10->setDAF(400.0);
+    audio->setDAF(0.5);
+    hide1->setDAF(0.6);
+    hide2->setDAF(0.8);
+    hide3->setDAF(1.0);
+    hide4->setDAF(1.0);
+    hide5->setDAF(1.0);
+    hide6->setDAF(1.0);
+    hide7->setDAF(1.0);
+    hide8->setDAF(1.0);
+    hide9->setDAF(1.0);
+    hide10->setDAF(1.0);
   
   WatorNet net(audio);
   net.layout();

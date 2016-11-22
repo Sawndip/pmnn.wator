@@ -82,8 +82,9 @@ void WatorInputL::snapshot(void){
 WatorAudioWaveL::WatorAudioWaveL()
 :WatorInputL() {
 }
-void WatorAudioWaveL::forward(void){
-  auto waves = readWave("./waveform/myRecording09.wav");
+
+void WatorAudioWaveL::forwardOneWave(const string &path){
+  auto waves = readWave(path);
   DUMP_VAR(waves.size());
   if(waves.empty()) {
     return ;
@@ -104,6 +105,14 @@ void WatorAudioWaveL::forward(void){
     }
   }
 }
+
+void WatorAudioWaveL::forward(void){
+    for(int i = 0;i < 5;i++) {
+        this->forwardOneWave("./waveform/myRecording09.wav");
+    }
+}
+
+
 int16_t WatorAudioWaveL::active(void) {
   if(blob_.size()>1) {
     auto it = blob_.rbegin();
@@ -124,16 +133,25 @@ bool WatorAudioWaveL::diactive(void) {
     sum += 1.0;
     //DUMP_VAR(diff);
     //DUMP_VAR(diffABS);
-    diffs_.push_back(diffABS);
+    double diffAdj = (double)diffABS/(sum);
+    double diffAve = diffAdj/(double)iMaxWaveWidth_;
+    diffs_.push_back(diffAve);
       //DUMP_VAR(diffs_.size());
       //DUMP_VAR(iMaxWaveWidth_);
-      dThreshold_ += (double)diffABS/(sum *(double)diffs_.size());
+      dThreshold_ += diffAve;
       if(diffs_.size() >iMaxWaveWidth_) {
-          dThreshold_ -= (double)diffs_.front()/(double)diffs_.size();
+          dThreshold_ -= diffs_.front();
           diffs_.pop_front();
       }
-      if(diffABS > dThreshold_ *  dDeativeFactor_) {
-          //DUMP_VAR(diffABS);
+      if(dThreshold_ < 0) {
+          DUMP_VAR(diffABS);
+          DUMP_VAR(diffAdj);
+          DUMP_VAR(dThreshold_);
+      }
+      //DUMP_VAR(diffAdj);
+      //DUMP_VAR(dThreshold_);
+      if(diffAdj > dThreshold_ *  dDeativeFactor_) {
+          //DUMP_VAR(diffAdj);
           //DUMP_VAR(dThreshold_);
           intermediate_.push_back(true);
           if(intermediate_.size() >iMaxWaveWidth_) {
@@ -173,8 +191,8 @@ void WatorAudioWaveL::snapshot(void){
     DUMP_VAR(name_);
     DUMP_VAR(maxHeight_);
     DUMP_VAR(blob_.size());
-    int height = 200;
-    int heightDiff = 10;
+    int height = 3600;
+    int heightDiff = 100;
     int width = std::min(iConstWaveGraphWidth,blob_.size());;
     cv::Mat mat( height + heightDiff ,width,CV_8UC3,cv::Scalar(255,255,255));
     for(int i = 0;i < blob_.size();i++) {
@@ -202,7 +220,7 @@ void WatorAudioWaveL::snapshot(void){
 
         int16_t yDiff = height + heightDiff/2;
         if(i < intermediate_.size() && intermediate_.at(i)) {
-           mat.at<cv::Vec3b>(yDiff, x) = cv::Vec3b(0,255,0);
+           mat.at<cv::Vec3b>(yDiff, x) = cv::Vec3b(0,0,0);
         }
     }
     for(auto top:top_) {
@@ -327,17 +345,26 @@ bool WatorHiddenL::diactive(void) {
         double diffABS = std::abs(diff);
         //DUMP_VAR(diff);
         //DUMP_VAR(diffABS);
-        diffs_.push_back(diffABS);
+        double diffAdj = (double)diffABS/sum;
+        double diffAve = diffAdj/(double)iMaxWaveWidth_;
+        diffs_.push_back(diffAve);
         //DUMP_VAR(diffs_.size());
         //DUMP_VAR(iMaxWaveWidth_);
-        dThreshold_ += (double)diffABS/(sum * (double)diffs_.size());
+        dThreshold_ += diffAve;
         if(diffs_.size() >iMaxWaveWidth_) {
-            dThreshold_ -= (double)diffs_.front()/(double)diffs_.size();
+            dThreshold_ -= diffs_.front();
             diffs_.pop_front();
         }
-        if(diffABS > dThreshold_ * dDeativeFactor_) {
-            //DUMP_VAR(name_);
-            //DUMP_VAR(dThreshold_);
+        if(dThreshold_ < 0) {
+            DUMP_VAR(diffABS);
+            DUMP_VAR(diffAdj);
+            DUMP_VAR(dThreshold_);
+        }
+        if(diffAdj > dThreshold_ * dDeativeFactor_) {
+            DUMP_VAR(name_);
+            DUMP_VAR(dThreshold_);
+            DUMP_VAR(diffABS);
+            DUMP_VAR(diffAdj);
             intermediate_.push_back(true);
             if(intermediate_.size() >iMaxWaveWidth_) {
               intermediate_.pop_front();
@@ -368,8 +395,8 @@ void WatorHiddenL::snapshot(void){
     DUMP_VAR(name_);
     DUMP_VAR(maxHeight_);
     DUMP_VAR(blob_.size());
-    int height = 200;
-    int heightDiff = 10;
+    int height = 3600;
+    int heightDiff = 100;
     int width = std::min(iConstWaveGraphWidth,blob_.size());;
     cv::Mat mat( height+heightDiff ,width,CV_8UC3,cv::Scalar(255,255,255));
     for(int i = 0;i < blob_.size();i++) {
@@ -397,7 +424,7 @@ void WatorHiddenL::snapshot(void){
 
         int16_t yDiff = height + heightDiff/2;
         if(i < intermediate_.size() && intermediate_.at(i)) {
-           mat.at<cv::Vec3b>(yDiff, x) = cv::Vec3b(0,255,0);
+           mat.at<cv::Vec3b>(yDiff, x) = cv::Vec3b(0,0,0);
         }
     }
     for(auto top:top_) {
