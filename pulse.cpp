@@ -191,10 +191,11 @@ void WatorAudioWaveL::snapshot(void){
     DUMP_VAR(name_);
     DUMP_VAR(maxHeight_);
     DUMP_VAR(blob_.size());
-    int height = 3600;
+    int heightLow = 256;
+    int heightFull = 256 *4;
     int heightDiff = 100;
     int width = std::min(iConstWaveGraphWidth,blob_.size());;
-    cv::Mat mat( height + heightDiff ,width,CV_8UC3,cv::Scalar(255,255,255));
+    cv::Mat mat( heightLow + heightFull + heightDiff ,width,CV_8UC3,cv::Scalar(255,255,255));
     for(int i = 0;i < blob_.size();i++) {
         
         auto slip = i / iConstWaveGraphWidth;
@@ -212,13 +213,27 @@ void WatorAudioWaveL::snapshot(void){
             path += ".png";
             cv::imwrite( path,mat);
         }
-        int16_t baseLineWav =  height/2;
-        int16_t yWave = (int16_t)( blob_.at(i)*height/ (2*maxHeight_))  + baseLineWav;
+        int16_t baseLineWavFull = heightFull/2;
+        int16_t baseLineWavLow =  heightFull + heightLow/2;
+        int16_t val = blob_.at(i);
+        int16_t yWaveFull = (int16_t)( val*(heightFull) / (2*maxHeight_)) + baseLineWavFull;;
+        
+        int16_t yWaveLow = baseLineWavLow;
+        if(std::abs(val) < heightLow/2) {
+            yWaveLow = val + baseLineWavLow;
+        }
+        
         int x = i % iConstWaveGraphWidth;
-        cv::line(mat,cv::Point(x,yWave),cv::Point(x,baseLineWav), cv::Scalar(0,0,255));
-        mat.at<cv::Vec3b>(baseLineWav, x) = cv::Vec3b(0,0,0);
+        cv::line(mat,cv::Point(x,yWaveFull),cv::Point(x,baseLineWavFull), cv::Scalar(0,0,255));
 
-        int16_t yDiff = height + heightDiff/2;
+        cv::line(mat,cv::Point(x,yWaveLow),cv::Point(x,baseLineWavLow), cv::Scalar(0,0,255));
+    
+        mat.at<cv::Vec3b>(baseLineWavFull, x) = cv::Vec3b(0,0,0);
+
+        mat.at<cv::Vec3b>(baseLineWavLow, x) = cv::Vec3b(0,0,0);
+
+
+        int16_t yDiff = heightLow + heightFull + heightDiff/2;
         if(i < intermediate_.size() && intermediate_.at(i)) {
            mat.at<cv::Vec3b>(yDiff, x) = cv::Vec3b(0,0,0);
         }
@@ -282,13 +297,14 @@ void WatorHiddenL::forward(void) {
   //cout << name_ << endl;
   auto buttom = buttom_.at(0);
   int16_t blob = buttom->active();
-  static int16_t prev_activ = blob;
+  static int16_t prev_activ = 0;
   bool _a = buttom->diactive();
   //DUMP_VAR(_a);
   if(_a) {
     blob = prev_activ;
+  } else {
+      prev_activ = blob;
   }
-  prev_activ = blob;
   //DUMP_VAR(blob);
   stepBuff_.push_back(blob);
   if(stepBuff_.size() < step_) {
@@ -395,10 +411,11 @@ void WatorHiddenL::snapshot(void){
     DUMP_VAR(name_);
     DUMP_VAR(maxHeight_);
     DUMP_VAR(blob_.size());
-    int height = 3600;
+    int heightLow = 256;
+    int heightFull = 256 *4;
     int heightDiff = 100;
     int width = std::min(iConstWaveGraphWidth,blob_.size());;
-    cv::Mat mat( height+heightDiff ,width,CV_8UC3,cv::Scalar(255,255,255));
+    cv::Mat mat( heightLow + heightFull + heightDiff ,width,CV_8UC3,cv::Scalar(255,255,255));
     for(int i = 0;i < blob_.size();i++) {
         
         auto slip = i / iConstWaveGraphWidth;
@@ -416,15 +433,29 @@ void WatorHiddenL::snapshot(void){
             path += ".png";
             cv::imwrite( path,mat);
         }
-        int16_t baseLineWav =  height/2;
-        int16_t yWave = (int16_t)( blob_.at(i)*height/ (2*maxHeight_))  + baseLineWav;
+        int16_t baseLineWavFull = heightFull/2;
+        int16_t baseLineWavLow =  heightFull + heightLow/2;
+        int16_t val = blob_.at(i);
+        int16_t yWaveFull = (int16_t)( val*(heightFull) / (2*maxHeight_)) + baseLineWavFull;;
+        
+        int16_t yWaveLow = baseLineWavLow;
+        if(std::abs(val) < heightLow/2) {
+            yWaveLow = val + baseLineWavLow;
+        }
+        
         int x = i % iConstWaveGraphWidth;
-        cv::line(mat,cv::Point(x,yWave),cv::Point(x,baseLineWav), cv::Scalar(0,0,255));
-        mat.at<cv::Vec3b>(baseLineWav, x) = cv::Vec3b(0,0,0);
-
-        int16_t yDiff = height + heightDiff/2;
+        cv::line(mat,cv::Point(x,yWaveFull),cv::Point(x,baseLineWavFull), cv::Scalar(0,0,255));
+        
+        cv::line(mat,cv::Point(x,yWaveLow),cv::Point(x,baseLineWavLow), cv::Scalar(0,0,255));
+        
+        mat.at<cv::Vec3b>(baseLineWavFull, x) = cv::Vec3b(0,0,0);
+        
+        mat.at<cv::Vec3b>(baseLineWavLow, x) = cv::Vec3b(0,0,0);
+        
+        
+        int16_t yDiff = heightLow + heightFull + heightDiff/2;
         if(i < intermediate_.size() && intermediate_.at(i)) {
-           mat.at<cv::Vec3b>(yDiff, x) = cv::Vec3b(0,0,0);
+            mat.at<cv::Vec3b>(yDiff, x) = cv::Vec3b(0,0,0);
         }
     }
     for(auto top:top_) {
