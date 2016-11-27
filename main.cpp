@@ -65,12 +65,12 @@ int main() {
   out->addButtom(hide10);
     
     
-    audio->setDAF(0.2);
-    hide1->setDAF(0.2);
-    hide2->setDAF(0.3);
-    hide3->setDAF(0.4);
-    hide4->setDAF(0.5);
-    hide5->setDAF(0.5);
+    audio->setDAF(0.05);
+    hide1->setDAF(0.1);
+    hide2->setDAF(0.2);
+    hide3->setDAF(0.2);
+    hide4->setDAF(0.2);
+    hide5->setDAF(0.2);
     hide6->setDAF(0.5);
     hide7->setDAF(0.5);
     hide8->setDAF(0.5);

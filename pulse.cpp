@@ -20,6 +20,10 @@ using namespace std;
 
 const unsigned long iConstWaveGraphWidth = 3600*5;
 
+const unsigned long iConstDeActiveRateUp = 80;
+const unsigned long iConstDeActiveRateDown = 70;
+const double dConstDeActiveStep = 0.1;
+
 
 WatorBaseL::WatorBaseL(){
 }
@@ -94,8 +98,8 @@ void WatorAudioWaveL::forwardOneWave(const string &path){
   DUMP_VAR(wave->size());
   for(int i = 0;i < wave->size() -1;i++) {
     blob_.push_back(wave->at(i));
-    if(::abs(wave->at(i)) > maxHeight_) {
-        maxHeight_ = ::abs(wave->at(i));
+    if(std::abs(wave->at(i)) > maxHeight_) {
+        maxHeight_ = std::abs(wave->at(i));
     }
     if(blob_.size() > iMaxWaveWidth_) {
       blob_.pop_front();
@@ -107,7 +111,7 @@ void WatorAudioWaveL::forwardOneWave(const string &path){
 }
 
 void WatorAudioWaveL::forward(void){
-    for(int i = 0;i < 5;i++) {
+    for(int i = 0;i < 10;i++) {
         this->forwardOneWave("./waveform/myRecording09.wav");
     }
 }
@@ -121,56 +125,71 @@ int16_t WatorAudioWaveL::active(void) {
   return 0;
 }
 bool WatorAudioWaveL::diactive(void) {
-  if(blob_.size()>1) {
-    auto it = blob_.rbegin();
-    double diff = *it;
-    //DUMP_VAR(*it);
-    diff -= *(it+1);
-    //DUMP_VAR(*it);
-    double diffABS = std::abs(diff);
-    double sum = std::abs(*it);
-    sum += std::abs(*(it+1));
-    sum += 1.0;
-    //DUMP_VAR(diff);
-    //DUMP_VAR(diffABS);
-    double diffAdj = (double)diffABS/(sum);
-    double diffAve = diffAdj/(double)iMaxWaveWidth_;
-    diffs_.push_back(diffAve);
-      //DUMP_VAR(diffs_.size());
-      //DUMP_VAR(iMaxWaveWidth_);
-      dThreshold_ += diffAve;
-      if(diffs_.size() >iMaxWaveWidth_) {
-          dThreshold_ -= diffs_.front();
-          diffs_.pop_front();
-      }
-      if(dThreshold_ < 0) {
-          DUMP_VAR(diffABS);
-          DUMP_VAR(diffAdj);
-          DUMP_VAR(dThreshold_);
-      }
-      //DUMP_VAR(diffAdj);
-      //DUMP_VAR(dThreshold_);
-      if(diffAdj > dThreshold_ *  dDeativeFactor_) {
-          //DUMP_VAR(diffAdj);
-          //DUMP_VAR(dThreshold_);
-          intermediate_.push_back(true);
-          if(intermediate_.size() >iMaxWaveWidth_) {
-            intermediate_.pop_front();
-          }
-          return true;
-      }
-      intermediate_.push_back(false);
-      if(intermediate_.size() >iMaxWaveWidth_) {
+    allNumber_++;
+    if(blob_.size()>1) {
+        auto it = blob_.rbegin();
+        double diff = *it;
+        //DUMP_VAR(*it);
+        diff -= *(it+1);
+        //DUMP_VAR(*it);
+        double diffABS = std::abs(diff);
+        double sum = std::abs(*it);
+        sum += std::abs(*(it+1));
+        sum += 1.0;
+        //DUMP_VAR(diff);
+        //DUMP_VAR(diffABS);
+        double diffAdj = (double)diffABS/(sum);
+        double diffAve = diffAdj/(double)iMaxWaveWidth_;
+        diffs_.push_back(diffAve);
+        //DUMP_VAR(diffs_.size());
+        //DUMP_VAR(iMaxWaveWidth_);
+        dThreshold_ += diffAve;
+        if(diffs_.size() >iMaxWaveWidth_) {
+            dThreshold_ -= diffs_.front();
+            diffs_.pop_front();
+        }
+        if(dThreshold_ < 0) {
+            DUMP_VAR(diffABS);
+            DUMP_VAR(diffAdj);
+            DUMP_VAR(dThreshold_);
+        }
+        //DUMP_VAR(diffAdj);
+        //DUMP_VAR(dThreshold_);
+        if(diffAdj > dThreshold_ *  dDeativeFactor_) {
+            //DUMP_VAR(diffAdj);
+            //DUMP_VAR(dThreshold_);
+            intermediate_.push_back(true);
+            if(intermediate_.size() >iMaxWaveWidth_) {
+                intermediate_.pop_front();
+            }
+            deActiveNumber_++;
+            this->adjustRate();
+            return true;
+        }
+    }
+    intermediate_.push_back(false);
+    if(intermediate_.size() >iMaxWaveWidth_) {
         intermediate_.pop_front();
-      }
-      return false;
-  }
-  intermediate_.push_back(false);
-  if(intermediate_.size() >iMaxWaveWidth_) {
-    intermediate_.pop_front();
-  }
-  return false;
+    }
+    this->adjustRate();
+    return false;
 }
+
+void WatorAudioWaveL::adjustRate(void) {
+/*
+    if(allNumber_ < iMaxWaveWidth_) {
+        return;
+    }
+    int rate = 100*deActiveNumber_ /allNumber_;
+    DUMP_VAR(rate);
+    if( rate > iConstDeActiveRateUp) {
+        dDeativeFactor_ += dConstDeActiveStep;
+    } else if( rate < iConstDeActiveRateDown){
+        dDeativeFactor_ -= dConstDeActiveStep;
+    }
+ */
+}
+
 
 void WatorAudioWaveL::setDAF(double factor){
     dDeativeFactor_ = factor;
@@ -192,7 +211,7 @@ void WatorAudioWaveL::snapshot(void){
     DUMP_VAR(maxHeight_);
     DUMP_VAR(blob_.size());
     int heightLow = 256;
-    int heightFull = 256 *4;
+    int heightFull = 256 *8;
     int heightDiff = 100;
     int width = std::min(iConstWaveGraphWidth,blob_.size());;
     cv::Mat mat( heightLow + heightFull + heightDiff ,width,CV_8UC3,cv::Scalar(255,255,255));
@@ -301,13 +320,13 @@ void WatorHiddenL::forward(void) {
   bool _a = buttom->diactive();
   //DUMP_VAR(_a);
   if(_a) {
-    blob = prev_activ;
+      blob = prev_activ;
   } else {
       prev_activ = blob;
   }
   //DUMP_VAR(blob);
   stepBuff_.push_back(blob);
-  if(stepBuff_.size() < step_) {
+  if(stepBuff_.size() < step_ ) {
     return;
   }
   
@@ -331,7 +350,7 @@ void WatorHiddenL::forward(void) {
   }
 //    if(::abs(ave) > maxHeight_) {
     if(::abs(vMax) > maxHeight_) {
-        maxHeight_ = ::abs(ave);
+        maxHeight_ = max;
     }
     
   //DUMP_VAR(name_);
@@ -408,6 +427,9 @@ int WatorHiddenL::width(void) {
     return iMaxWaveWidth_;
 }
 void WatorHiddenL::snapshot(void){
+    if(maxHeight_ <= 0) {
+        return;
+    }
     DUMP_VAR(name_);
     DUMP_VAR(maxHeight_);
     DUMP_VAR(blob_.size());

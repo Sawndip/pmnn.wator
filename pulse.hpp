@@ -13,6 +13,7 @@ using namespace std;
 static const int iInterActiveRateReciprocal = 4;
 
 
+
 class WatorBaseL {
 public:
   
@@ -26,6 +27,8 @@ public:
   virtual void forward(void);
   virtual int16_t active(void);
   virtual bool diactive(void);
+    
+    
 
 protected:
   WatorBaseL();
@@ -72,6 +75,7 @@ public:
 protected:
 private:
     void forwardOneWave(const string &path);
+    void adjustRate(void);
 private:
     deque<int16_t> blob_;
     //int iMaxWaveWidth_ = 100*48*1024;
@@ -81,6 +85,10 @@ private:
     deque<bool> intermediate_;
     double dThreshold_ = 0.0;
     double dDeativeFactor_ = 1.0;
+
+    int deActiveNumber_ = 1;
+    int allNumber_ = 1;
+    
     
     // dump
     uint16_t maxHeight_ = 0;
@@ -125,6 +133,7 @@ protected:
   float disactive_ = - 1.0;
   int step_ = 2;
   vector<int16_t> stepBuff_;
+  int stepBuffInsertNumber_ = 0;
 
   deque<bool> intermediate_;
   deque<uint16_t> diffs_;
