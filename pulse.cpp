@@ -112,7 +112,7 @@ void WatorAudioWaveL::forwardOneWave(const string &path){
 
 void WatorAudioWaveL::forward(void){
     for(int i = 0;i < 10;i++) {
-        this->forwardOneWave("./waveform/myRecording09.wav");
+        this->forwardOneWave("./waveform/myRecording10.wav");
     }
 }
 
@@ -138,7 +138,11 @@ bool WatorAudioWaveL::diactive(void) {
         sum += 1.0;
         //DUMP_VAR(diff);
         //DUMP_VAR(diffABS);
+#if 0
         double diffAdj = (double)diffABS/(sum);
+#else
+        double diffAdj = (double)diffABS*sum;
+#endif
         double diffAve = diffAdj/(double)iMaxWaveWidth_;
         diffs_.push_back(diffAve);
         //DUMP_VAR(diffs_.size());
@@ -158,21 +162,21 @@ bool WatorAudioWaveL::diactive(void) {
         if(diffAdj > dThreshold_ *  dDeativeFactor_) {
             //DUMP_VAR(diffAdj);
             //DUMP_VAR(dThreshold_);
-            intermediate_.push_back(true);
+            intermediate_.push_back(false);
             if(intermediate_.size() >iMaxWaveWidth_) {
                 intermediate_.pop_front();
             }
             deActiveNumber_++;
             this->adjustRate();
-            return true;
+            return false;
         }
     }
-    intermediate_.push_back(false);
+    intermediate_.push_back(true);
     if(intermediate_.size() >iMaxWaveWidth_) {
         intermediate_.pop_front();
     }
     this->adjustRate();
-    return false;
+    return true;
 }
 
 void WatorAudioWaveL::adjustRate(void) {
@@ -320,7 +324,8 @@ void WatorHiddenL::forward(void) {
   bool _a = buttom->diactive();
   //DUMP_VAR(_a);
   if(_a) {
-      blob = prev_activ;
+      //blob = prev_activ;
+      blob = 0;
   } else {
       prev_activ = blob;
   }
@@ -434,7 +439,7 @@ void WatorHiddenL::snapshot(void){
     DUMP_VAR(maxHeight_);
     DUMP_VAR(blob_.size());
     int heightLow = 256;
-    int heightFull = 256 *4;
+    int heightFull = 256 *8;
     int heightDiff = 100;
     int width = std::min(iConstWaveGraphWidth,blob_.size());;
     cv::Mat mat( heightLow + heightFull + heightDiff ,width,CV_8UC3,cv::Scalar(255,255,255));
