@@ -385,7 +385,11 @@ bool WatorHiddenL::diactive(void) {
         double diffABS = std::abs(diff);
         //DUMP_VAR(diff);
         //DUMP_VAR(diffABS);
-        double diffAdj = (double)diffABS/sum;
+#if 0
+        double diffAdj = (double)diffABS/(sum);
+#else
+        double diffAdj = (double)diffABS*sum;
+#endif
         double diffAve = diffAdj/(double)iMaxWaveWidth_;
         diffs_.push_back(diffAve);
         //DUMP_VAR(diffs_.size());
@@ -405,23 +409,18 @@ bool WatorHiddenL::diactive(void) {
             DUMP_VAR(dThreshold_);
             DUMP_VAR(diffABS);
             DUMP_VAR(diffAdj);
-            intermediate_.push_back(true);
+            intermediate_.push_back(false);
             if(intermediate_.size() >iMaxWaveWidth_) {
               intermediate_.pop_front();
             }
-           return true;
+           return false;
         }
-        intermediate_.push_back(false);
-        if(intermediate_.size() >iMaxWaveWidth_) {
-          intermediate_.pop_front();
-        }
-        return false;
     }
-    intermediate_.push_back(false);
+    intermediate_.push_back(true);
     if(intermediate_.size() >iMaxWaveWidth_) {
       intermediate_.pop_front();
     }
-    return false;
+    return true;
 }
 void WatorHiddenL::setDAF(double factor){
     dDeativeFactor_ = factor;
