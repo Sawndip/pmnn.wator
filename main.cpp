@@ -66,10 +66,10 @@ int main() {
     
     
     audio->setDAF(0.01);
-    hide1->setDAF(0.1);
-    hide2->setDAF(0.2);
-    hide3->setDAF(0.2);
-    hide4->setDAF(0.2);
+    hide1->setDAF(0.01);
+    hide2->setDAF(0.02);
+    hide3->setDAF(0.02);
+    hide4->setDAF(0.02);
     hide5->setDAF(0.2);
     hide6->setDAF(0.5);
     hide7->setDAF(0.5);
