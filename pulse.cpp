@@ -112,7 +112,7 @@ void WatorAudioWaveL::forwardOneWave(const string &path){
 
 void WatorAudioWaveL::forward(void){
     for(int i = 0;i < 10;i++) {
-        this->forwardOneWave("./waveform/myRecording10.wav");
+        this->forwardOneWave("./waveform/myRecording00.wav");
     }
 }
 
