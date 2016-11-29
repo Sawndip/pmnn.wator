@@ -598,23 +598,48 @@ void HalfSinCurveL::forward(void) {
         archUp_ = false;
     }
     arch_.push_back(value);
+    uint16_t absVal = std::abs(value);
+    if( absVal> archMax_) {
+        archMax_ = absVal;
+    }
+    if(absVal > maxHeight_) {
+        maxHeight_ = absVal;
+    }
     for(auto top:top_) {
         top->forward();
     }
 }
+
+const double dConstPI = std::acos(-1.0);
+
+void HalfSinCurveL::sinArch(void) {
+    if(arch_.size() < 2) {
+        blob_.push_back(0);
+        if(blob_.size() > iMaxWaveWidth_) {
+            blob_.pop_front();
+        }
+        return;
+    }
+    //DUMP_VAR(arch_.size());
+    for(int i = 0 ;i < arch_.size();i++){
+        int16_t value = archMax_ * std::sin( (double) i * dConstPI/(double)(arch_.size() -1) );
+        //DUMP_VAR(value);
+        if(archUp_) {
+            blob_.push_back(value);
+        } else {
+            blob_.push_back(0-value);
+        }
+        if(blob_.size() > iMaxWaveWidth_) {
+            blob_.pop_front();
+        }
+    }
+    //DUMP_VAR(blob_.size());
+}
+
 void HalfSinCurveL::changeArch(void) {
     //DUMP_VAR(arch_.size());
     if(arch_.size() > archWidthCutMin_ && arch_.size() < archWidthCutMax_) {
-        for(int i = 0 ;i < arch_.size();i++){
-            auto value = arch_.at(i);
-            if(std::abs(value) > maxHeight_) {
-                maxHeight_ = std::abs(value);
-            }
-            blob_.push_back(value);
-            if(blob_.size() > iMaxWaveWidth_) {
-                blob_.pop_front();
-            }
-        }
+        this->sinArch();
     } else {
         for(int i = 0 ;i < arch_.size();i++){
             blob_.push_back(0);
@@ -624,6 +649,7 @@ void HalfSinCurveL::changeArch(void) {
         }
     }
     arch_.clear();
+    archMax_ = 0;
 }
 
 

@@ -128,7 +128,7 @@ public:
 protected:
     deque<int16_t> blob_;
     //int iMaxWaveWidth_ = 100*48*1024;
-    int iMaxWaveWidth_ = 2*48*1024;
+    int iMaxWaveWidth_ = 10*48*1024;
     int interNumber_ = iMaxWaveWidth_/iInterActiveRateReciprocal;
     deque<uint16_t> diffs_;
     deque<bool> intermediate_;
@@ -181,17 +181,19 @@ public:
     virtual int16_t value(void);
 private:
     void changeArch(void);
+    void sinArch(void);
 private:
     /// 48k samplate.
     int sampleRate_ = 48 *1024;
     
     /// hearable wave max 20khz => 16k
-    const int earRateMax_ = 16 * 1024;
+    const int earRateMax_ = 8 * 1024;
     /// hearable wave min 20hz => 32hz
     const int earRateMin_ = 32;
     
     bool archUp_ = false;
     deque<int16_t> arch_;
+    uint16_t archMax_ = 0;
     
     int archWidthCutMin_ = sampleRate_ / (2*earRateMax_);
     int archWidthCutMax_ = sampleRate_ / (2*earRateMin_);
