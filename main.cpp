@@ -9,6 +9,7 @@ using namespace std;
 #define NAME_(x) {x->name(#x);}
 
 int main() {
+/*
   shared_ptr<WatorAudioWaveL> audio = make_shared<WatorAudioWaveL>();
   NAME_(audio);
   
@@ -76,7 +77,22 @@ int main() {
     hide8->setDAF(0.5);
     hide9->setDAF(0.5);
     hide10->setDAF(0.5);
+*/
+
+    shared_ptr<WatorAudioWave2L> audio = make_shared<WatorAudioWave2L>();
+    NAME_(audio);
+    shared_ptr<HalfSinCurveL> halfSin = make_shared<HalfSinCurveL>();
+    NAME_(halfSin);
+    shared_ptr<WatorOutputL> out = make_shared<WatorOutputL>();
+    NAME_(out);
   
+    audio->addTop(halfSin);
+    halfSin->addTop(out);
+
+    halfSin->addButtom(audio);
+    out->addButtom(halfSin);
+    
+    
   WatorNet net(audio);
   net.layout();
   net.train();
