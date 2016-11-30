@@ -516,7 +516,7 @@ WatorAudioWave2L::~WatorAudioWave2L() {
 
 void WatorAudioWave2L::forward(void) {
     for(int i = 0;i < 1;i++) {
-        this->forwardOneWave("./waveform/myRecording00.wav");
+        this->forwardOneWave("./waveform/myRecording10.wav");
     }
 }
 
@@ -611,6 +611,7 @@ void HalfSinCurveL::forward(void) {
 }
 
 const double dConstPI = std::acos(-1.0);
+const int iConstArchPowerThrelod = 1024;
 
 void HalfSinCurveL::sinArch(void) {
     if(arch_.size() < 2) {
@@ -620,9 +621,9 @@ void HalfSinCurveL::sinArch(void) {
         }
         return;
     }
-    // sum
+    // block weak wave that sum is low
     int archSum = std::abs(std::accumulate(arch_.begin(), arch_.end(), 0));
-    if(archSum < 2*1024) {
+    if(archSum < iConstArchPowerThrelod) {
         DUMP_VAR(archSum);
         for(int i = 0 ;i < arch_.size();i++){
             blob_.push_back(0);
@@ -633,8 +634,7 @@ void HalfSinCurveL::sinArch(void) {
         return;
     }
     
-    
-    // good ones.
+    // forwod data to next layer.
     //DUMP_VAR(arch_.size());
     for(int i = 0 ;i < arch_.size();i++){
         int16_t value = archMax_ * std::sin( (double) i * dConstPI/(double)(arch_.size() -1) );
