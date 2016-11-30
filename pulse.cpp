@@ -516,7 +516,7 @@ WatorAudioWave2L::~WatorAudioWave2L() {
 
 void WatorAudioWave2L::forward(void) {
     for(int i = 0;i < 1;i++) {
-        this->forwardOneWave("./waveform/myRecording09.wav");
+        this->forwardOneWave("./waveform/myRecording00.wav");
     }
 }
 
@@ -652,6 +652,11 @@ void HalfSinCurveL::changeArch(void) {
     archMax_ = 0;
 }
 
+
+void HalfSinCurveL::snapshot(void){
+    WatorHiddenL::snapshot();
+    writeWave("dump/"+name_ + ".wav",blob_);
+}
 
 int16_t HalfSinCurveL::value(void) {
     return 0;

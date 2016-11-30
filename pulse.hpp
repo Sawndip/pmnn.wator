@@ -179,6 +179,7 @@ public:
     virtual void layout(void);
     virtual void forward(void);
     virtual int16_t value(void);
+    virtual void snapshot(void);
 private:
     void changeArch(void);
     void sinArch(void);
