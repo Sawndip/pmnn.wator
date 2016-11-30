@@ -620,6 +620,21 @@ void HalfSinCurveL::sinArch(void) {
         }
         return;
     }
+    // sum
+    int archSum = std::abs(std::accumulate(arch_.begin(), arch_.end(), 0));
+    if(archSum < 2*1024) {
+        DUMP_VAR(archSum);
+        for(int i = 0 ;i < arch_.size();i++){
+            blob_.push_back(0);
+            if(blob_.size() > iMaxWaveWidth_) {
+                blob_.pop_front();
+            }
+        }
+        return;
+    }
+    
+    
+    // good ones.
     //DUMP_VAR(arch_.size());
     for(int i = 0 ;i < arch_.size();i++){
         int16_t value = archMax_ * std::sin( (double) i * dConstPI/(double)(arch_.size() -1) );
