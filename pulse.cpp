@@ -584,18 +584,18 @@ void HalfSinCurveL::forward(void) {
     //cout << name_ << endl;
     auto buttom = buttom_.at(0);
     int16_t value = buttom->value();
-    if(value == 0) {
-        this->changeArch();
-    } else if(value > 0) {
+    if(value > 0) {
         if(archUp_ == false) {
             this->changeArch();
         }
         archUp_ = true;
-    } else {
+    } else if(value < 0){
         if(archUp_ == true) {
             this->changeArch();
         }
         archUp_ = false;
+    } else {
+        /// zero continue;
     }
     arch_.push_back(value);
     uint16_t absVal = std::abs(value);
