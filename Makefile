@@ -15,5 +15,7 @@ SRC += waveform/wave.cpp
 
 all:
 	clang++ $(CXXFLAGS) $(SRC) $(LDFLAGS) -o move.out
-run:all
+run:all dump-clean
 	./move.out
+dump-clean:
+	rm -rf dump/*.png
