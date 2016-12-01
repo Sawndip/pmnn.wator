@@ -9,7 +9,16 @@
 using namespace std;
 
 #pragma once
-
 #include "base_layer.hpp"
-#include "audio_layer.hpp"
-#include "net.hpp"
+
+
+class WatorNet {
+public:
+  WatorNet(WatorBaseLPtr entry);
+  void train(void);
+  void layout(void);
+  void snapshot(void);
+private:
+  WatorBaseLPtr entry_;
+};
+

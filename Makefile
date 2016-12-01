@@ -10,6 +10,9 @@ LDFLAGS += -lopencv_core
 
 SRC := main.cpp
 SRC += pulse.cpp
+SRC += base_layer.cpp
+SRC += audio_layer.cpp
+SRC += net.cpp
 SRC += waveform/wave.cpp
 
 
