@@ -91,7 +91,9 @@ using namespace little_endian_io;
 void writeWave(const string &path,const deque<int16_t> &data){
     ofstream f( path, ios::binary );
     // Write the file headers
-    f << "RIFF----WAVEfmt ";     // (chunk size to be filled in later)
+    f << "RIFF";     // (chunk size to be filled in later)
+    write_word( f,     data.size()*sizeof(int16_t) + sizeof(wavHeader), 4 );
+    f << "WAVEfmt ";     // (chunk size to be filled in later)
     write_word( f,     16, 4 );  // no extension data
     write_word( f,      1, 2 );  // PCM - integer samples
     write_word( f,      1, 2 );  // 1 channels (stereo file)
@@ -101,8 +103,7 @@ void writeWave(const string &path,const deque<int16_t> &data){
     write_word( f,     16, 2 );  // number of bits per sample (use a multiple of 8)
     
     // Write the data chunk header
-    size_t data_chunk_pos = f.tellp();
-    f << "data----";  // (chunk size to be filled in later)
+    f << "data";  // (chunk size to be filled in later)
     write_word( f,  data.size()*sizeof(int16_t), 4 );
     for(auto wave:data) {
         write_word( f,      wave, 2 );

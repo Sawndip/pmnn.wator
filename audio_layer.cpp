@@ -318,7 +318,7 @@ void HalfSinCurveL::forward(void) {
 }
 
 const double dConstPI = std::acos(-1.0);
-const int iConstArchPowerThrelod = 1024;
+const int iConstArchPowerThrelod = 2*1024;
 
 void HalfSinCurveL::sinArch(void) {
     if(arch_.size() < 2) {
@@ -341,6 +341,7 @@ void HalfSinCurveL::sinArch(void) {
         return;
     }
     
+#if 0
     // forwod data to next layer.
     //DUMP_VAR(arch_.size());
     for(int i = 0 ;i < arch_.size();i++){
@@ -355,6 +356,17 @@ void HalfSinCurveL::sinArch(void) {
             blob_.pop_front();
         }
     }
+#endif
+#if 1
+    for(int i = 0 ;i < arch_.size();i++){
+        int16_t value = arch_.at(i);
+        //DUMP_VAR(value);
+        blob_.push_back(value);
+        if(blob_.size() > iMaxWaveWidth_) {
+            blob_.pop_front();
+        }
+    }
+#endif
     //DUMP_VAR(blob_.size());
 }
 
