@@ -223,7 +223,7 @@ WatorAudioWave2L::~WatorAudioWave2L() {
 
 void WatorAudioWave2L::forward(void) {
     for(int i = 0;i < 1;i++) {
-        this->forwardOneWave("./waveform/myRecording10.wav");
+        this->forwardOneWave("./waveform/myRecording09.wav");
     }
 }
 
@@ -255,6 +255,55 @@ int16_t WatorAudioWave2L::value(void) {
         return *it;
     }
     return 0;
+}
+
+
+SinBlob::SinBlob()
+:blob_({})
+,max_(0)
+,accumulate_(0)
+,order_(-1) {
+}
+
+void SinBlob::push(int16_t val) {
+  blob_.push_back(val);
+  uint16_t absVal = std::abs(val);
+  if( absVal> max_) {
+    max_ = absVal;
+  }
+  accumulate_ += absVal;
+  if(order_ == -1) {
+    if(val < 0) {
+      order_ = 0;
+    } else if(val > 0) {
+      order_ = 1;
+    } else {
+      // continue;
+    }
+  }
+}
+void SinBlob::clear() {
+  blob_.clear();
+  max_ = 0;
+  accumulate_ = 0;
+  order_ = -1;
+}
+
+uint16_t SinBlob::max(void) {
+  return max_;
+}
+
+
+size_t SinBlob::size(void) {
+  return blob_.size();
+}
+
+uint16_t SinBlob::accumulate(void) {
+  return accumulate_;
+}
+  
+int16_t SinBlob::at(size_t index) {
+  return blob_.at(index);
 }
 
 
@@ -304,11 +353,9 @@ void HalfSinCurveL::forward(void) {
     } else {
         /// zero continue;
     }
-    arch_.push_back(value);
+    arch_.push(value);
+
     uint16_t absVal = std::abs(value);
-    if( absVal> archMax_) {
-        archMax_ = absVal;
-    }
     if(absVal > maxHeight_) {
         maxHeight_ = absVal;
     }
@@ -318,7 +365,7 @@ void HalfSinCurveL::forward(void) {
 }
 
 const double dConstPI = std::acos(-1.0);
-const int iConstArchPowerThrelod = 2*1024;
+const int iConstArchPowerThrelod = 1*128;
 
 void HalfSinCurveL::sinArch(void) {
     if(arch_.size() < 2) {
@@ -329,9 +376,8 @@ void HalfSinCurveL::sinArch(void) {
         return;
     }
     // block weak wave that sum is low
-    int archSum = std::abs(std::accumulate(arch_.begin(), arch_.end(), 0));
-    if(archSum < iConstArchPowerThrelod) {
-        DUMP_VAR(archSum);
+    if(arch_.accumulate() < iConstArchPowerThrelod) {
+        DUMP_VAR(arch_.accumulate());
         for(int i = 0 ;i < arch_.size();i++){
             blob_.push_back(0);
             if(blob_.size() > iMaxWaveWidth_) {
@@ -341,11 +387,11 @@ void HalfSinCurveL::sinArch(void) {
         return;
     }
     
-#if 0
+#if 1
     // forwod data to next layer.
     //DUMP_VAR(arch_.size());
     for(int i = 0 ;i < arch_.size();i++){
-        int16_t value = archMax_ * std::sin( (double) i * dConstPI/(double)(arch_.size() -1) );
+        int16_t value = arch_.max() * std::sin( (double) i * dConstPI/(double)(arch_.size() -1) );
         //DUMP_VAR(value);
         if(archUp_) {
             blob_.push_back(value);
@@ -357,7 +403,7 @@ void HalfSinCurveL::sinArch(void) {
         }
     }
 #endif
-#if 1
+#if 0
     for(int i = 0 ;i < arch_.size();i++){
         int16_t value = arch_.at(i);
         //DUMP_VAR(value);
@@ -374,6 +420,7 @@ void HalfSinCurveL::changeArch(void) {
     //DUMP_VAR(arch_.size());
     if(arch_.size() > archWidthCutMin_ && arch_.size() < archWidthCutMax_) {
         this->sinArch();
+        archs_.push_back(arch_);
     } else {
         for(int i = 0 ;i < arch_.size();i++){
             blob_.push_back(0);
@@ -383,7 +430,6 @@ void HalfSinCurveL::changeArch(void) {
         }
     }
     arch_.clear();
-    archMax_ = 0;
 }
 
 

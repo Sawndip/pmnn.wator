@@ -58,6 +58,28 @@ private:
     void forwardOneWave(const string &path);
 };
 
+class SinBlob {
+public:
+  SinBlob();
+  void push(int16_t val);
+  void clear();
+
+  uint16_t max(void);
+  void max(uint16_t val);
+
+  size_t size(void);
+
+  uint16_t accumulate(void);
+  
+  int16_t at(size_t index);
+
+private:
+  deque<int16_t> blob_;
+  uint16_t max_;
+  uint32_t accumulate_;
+  int8_t order_;
+};
+
 
 class HalfSinCurveL :public WatorHiddenL {
 public:
@@ -95,9 +117,9 @@ private:
     const int earRateMin_ = 32;
     
     bool archUp_ = false;
-    deque<int16_t> arch_;
-    uint16_t archMax_ = 0;
-    
+    SinBlob arch_;
+    deque<SinBlob> archs_;
+   
     int archWidthCutMin_ = sampleRate_ / (2*earRateMax_);
     int archWidthCutMax_ = sampleRate_ / (2*earRateMin_);
 };
