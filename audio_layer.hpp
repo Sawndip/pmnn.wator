@@ -67,17 +67,27 @@ public:
   uint16_t max(void);
   void max(uint16_t val);
 
-  size_t size(void);
+  virtual size_t size(void);
 
   uint16_t accumulate(void);
   
   int16_t at(size_t index);
 
-private:
+protected:
   deque<int16_t> blob_;
   uint16_t max_;
   uint32_t accumulate_;
   int8_t order_;
+};
+
+class EmptySinBlob:public SinBlob {
+public:
+  EmptySinBlob(size_t);
+  virtual size_t size(void);
+private:
+  EmptySinBlob();
+private:
+  size_t holdspace_;
 };
 
 

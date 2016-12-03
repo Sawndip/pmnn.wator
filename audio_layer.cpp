@@ -305,7 +305,13 @@ uint16_t SinBlob::accumulate(void) {
 int16_t SinBlob::at(size_t index) {
   return blob_.at(index);
 }
-
+EmptySinBlob::EmptySinBlob(size_t size)
+: SinBlob()
+, holdspace_(size){
+}
+size_t EmptySinBlob::size(void) {
+  return holdspace_;
+}
 
 
 HalfSinCurveL::HalfSinCurveL()
