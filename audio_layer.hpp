@@ -96,7 +96,7 @@ public:
     HalfSinCurveL();
     virtual ~HalfSinCurveL();
 
-    /*
+/*
     
     virtual void addTop(WatorBaseLPtr top);
     virtual void addButtom(WatorBaseLPtr buttom);
@@ -115,20 +115,28 @@ public:
     virtual int16_t value(void);
     virtual void snapshot(void);
 private:
-    void changeArch(void);
-    void sinArch(void);
+    void fillArch(void);
+    void fillSinArch(void);
+    void fillOrigArch(void);
+    void fillEmptyArch(void);
+
+    bool isEarArch(void);
+    bool isPowerArch(void);
 private:
     /// 48k samplate.
     int sampleRate_ = 48 *1024;
     
     /// hearable wave max 20khz => 16k
-    const int earRateMax_ = 8 * 1024;
-    /// hearable wave min 20hz => 32hz
-    const int earRateMin_ = 32;
+    const int earRateMax_ = 16 * 1024;
+    /// hearable wave min 20hz => 16hz
+    const int earRateMin_ = 16;
     
     bool archUp_ = false;
     SinBlob arch_;
     deque<SinBlob> archs_;
+
+    int dropCounter_ = 0;
+    int keepCounter_ = 0;
    
     int archWidthCutMin_ = sampleRate_ / (2*earRateMax_);
     int archWidthCutMax_ = sampleRate_ / (2*earRateMin_);

@@ -348,12 +348,12 @@ void HalfSinCurveL::forward(void) {
     int16_t value = buttom->value();
     if(value > 0) {
         if(archUp_ == false) {
-            this->changeArch();
+            this->fillArch();
         }
         archUp_ = true;
     } else if(value < 0){
         if(archUp_ == true) {
-            this->changeArch();
+            this->fillArch();
         }
         archUp_ = false;
     } else {
@@ -371,29 +371,9 @@ void HalfSinCurveL::forward(void) {
 }
 
 const double dConstPI = std::acos(-1.0);
-const int iConstArchPowerThrelod = 1*128;
+const int iConstArchPowerThrelod = 128;
 
-void HalfSinCurveL::sinArch(void) {
-    if(arch_.size() < 2) {
-        blob_.push_back(0);
-        if(blob_.size() > iMaxWaveWidth_) {
-            blob_.pop_front();
-        }
-        return;
-    }
-    // block weak wave that sum is low
-    if(arch_.accumulate() < iConstArchPowerThrelod) {
-        DUMP_VAR(arch_.accumulate());
-        for(int i = 0 ;i < arch_.size();i++){
-            blob_.push_back(0);
-            if(blob_.size() > iMaxWaveWidth_) {
-                blob_.pop_front();
-            }
-        }
-        return;
-    }
-    
-#if 1
+void HalfSinCurveL::fillSinArch(void) {
     // forwod data to next layer.
     //DUMP_VAR(arch_.size());
     for(int i = 0 ;i < arch_.size();i++){
@@ -408,8 +388,11 @@ void HalfSinCurveL::sinArch(void) {
             blob_.pop_front();
         }
     }
-#endif
-#if 0
+    //DUMP_VAR(blob_.size());
+    archs_.push_back(arch_);
+}
+
+void HalfSinCurveL::fillOrigArch(void) {
     for(int i = 0 ;i < arch_.size();i++){
         int16_t value = arch_.at(i);
         //DUMP_VAR(value);
@@ -418,22 +401,44 @@ void HalfSinCurveL::sinArch(void) {
             blob_.pop_front();
         }
     }
-#endif
     //DUMP_VAR(blob_.size());
+    archs_.push_back(arch_);
 }
 
-void HalfSinCurveL::changeArch(void) {
-    //DUMP_VAR(arch_.size());
-    if(arch_.size() > archWidthCutMin_ && arch_.size() < archWidthCutMax_) {
-        this->sinArch();
-        archs_.push_back(arch_);
-    } else {
-        for(int i = 0 ;i < arch_.size();i++){
-            blob_.push_back(0);
-            if(blob_.size() > iMaxWaveWidth_) {
-                blob_.pop_front();
-            }
+void HalfSinCurveL::fillEmptyArch(void) {
+    for(int i = 0 ;i < arch_.size();i++) {
+        blob_.push_back(0);
+        if(blob_.size() > iMaxWaveWidth_) {
+            blob_.pop_front();
         }
+    }
+    EmptySinBlob empty(arch_.size());
+    archs_.push_back(empty);
+}
+
+bool HalfSinCurveL::isEarArch(void) {
+    if(arch_.size() > archWidthCutMin_ && arch_.size() < archWidthCutMax_) {
+        return true;
+    }
+    return false;
+}
+bool HalfSinCurveL::isPowerArch(void) {
+    if(arch_.accumulate() > iConstArchPowerThrelod) {
+        return true;
+    }
+    return false;
+}
+
+
+void HalfSinCurveL::fillArch(void) {
+    //DUMP_VAR(arch_.size());
+    if(this->isEarArch() && this->isPowerArch()) {
+        //this->fillSinArch();
+        this->fillOrigArch();
+        keepCounter_++;
+    } else {
+        this->fillEmptyArch();
+        dropCounter_++;
     }
     arch_.clear();
 }
@@ -442,6 +447,10 @@ void HalfSinCurveL::changeArch(void) {
 void HalfSinCurveL::snapshot(void){
     WatorHiddenL::snapshot();
     writeWave("dump/"+name_ + ".wav",blob_);
+    DUMP_VAR(dropCounter_);
+    DUMP_VAR(keepCounter_);
+    DUMP_VAR(dropCounter_+keepCounter_);
+    DUMP_VAR(100*dropCounter_/(dropCounter_+keepCounter_));
 }
 
 int16_t HalfSinCurveL::value(void) {
