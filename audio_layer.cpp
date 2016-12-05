@@ -458,5 +458,53 @@ int16_t HalfSinCurveL::value(void) {
 }
 
 
+FullSinCurveL::FullSinCurveL()
+:WatorHiddenL(){
+    DUMP_VAR(name_);
+}
+FullSinCurveL::~FullSinCurveL() {
+}
 
+void FullSinCurveL::layout(void)
+{
+    auto buttom = buttom_.at(0);
+    auto width = buttom->width();
+    //DUMP_VAR(width);
+    //DUMP_VAR(step_);
+    iMaxWaveWidth_ = width;
+    //DUMP_VAR(iMaxWaveWidth_);
+    interNumber_ = iMaxWaveWidth_;
+    
+    for(int i = 0 ;i < depth_ ;i++) {
+        cout << "  ";
+    }
+    cout << name_ << ":m[" << iMaxWaveWidth_ << "]:i[" << interNumber_ << "]" << endl;
+    for(auto top:top_) {
+        top->layout();
+    }
+}
+
+void FullSinCurveL::forward(void) {
+    //cout << name_ << endl;
+    auto buttom = buttom_.at(0);
+    int16_t value = buttom->value();
+    for(auto top:top_) {
+        top->forward();
+    }
+}
+
+int16_t FullSinCurveL::value(void) {
+    return 0;
+}
+
+
+
+void FullSinCurveL::snapshot(void){
+    WatorHiddenL::snapshot();
+    writeWave("dump/"+name_ + ".wav",blob_);
+    DUMP_VAR(dropCounter_);
+    DUMP_VAR(keepCounter_);
+    DUMP_VAR(dropCounter_+keepCounter_);
+    DUMP_VAR(100*dropCounter_/(dropCounter_+keepCounter_));
+}
 

@@ -136,10 +136,46 @@ private:
     deque<SinBlob> archs_;
 
     int dropCounter_ = 0;
-    int keepCounter_ = 0;
+    int keepCounter_ = 1;
    
     int archWidthCutMin_ = sampleRate_ / (2*earRateMax_);
     int archWidthCutMax_ = sampleRate_ / (2*earRateMin_);
 };
 
+class FullSinCurveL :public WatorHiddenL {
+public:
+    FullSinCurveL();
+    virtual ~FullSinCurveL();
+    
+    /*
+     
+     virtual void addTop(WatorBaseLPtr top);
+     virtual void addButtom(WatorBaseLPtr buttom);
+     virtual void layout(void);
+     virtual void forward(void);
+     virtual int width(void);
+     virtual void snapshot(void);
+     
+     virtual int16_t active(void);
+     virtual bool diactive(void);
+     
+     virtual void setDAF(double factor);
+     */
+    virtual void layout(void);
+    virtual void forward(void);
+    virtual int16_t value(void);
+    virtual void snapshot(void);
+private:
+    void fillArch(void);
+    void fillSinArch(void);
+    void fillOrigArch(void);
+    void fillEmptyArch(void);
+    
+    bool isEarArch(void);
+    bool isPowerArch(void);
+private:
+    deque<SinBlob> archs_;
+    int dropCounter_ = 0;
+    int keepCounter_ = 1;
+};
 

@@ -83,14 +83,18 @@ int main() {
     NAME_(audio);
     shared_ptr<HalfSinCurveL> halfSin = make_shared<HalfSinCurveL>();
     NAME_(halfSin);
+    shared_ptr<FullSinCurveL> fullSin = make_shared<FullSinCurveL>();
+    NAME_(fullSin);
     shared_ptr<WatorOutputL> out = make_shared<WatorOutputL>();
     NAME_(out);
   
     audio->addTop(halfSin);
-    halfSin->addTop(out);
+    halfSin->addTop(fullSin);
+    fullSin->addTop(out);
 
     halfSin->addButtom(audio);
-    out->addButtom(halfSin);
+    fullSin->addButtom(halfSin);
+    out->addButtom(fullSin);
     
     
   WatorNet net(audio);
