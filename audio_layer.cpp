@@ -457,6 +457,10 @@ int16_t HalfSinCurveL::value(void) {
     return 0;
 }
 
+SinBlob & HalfSinCurveL::valueSin() {
+    return archs_.front();
+}
+
 
 FullSinCurveL::FullSinCurveL()
 :WatorHiddenL(){
@@ -487,7 +491,10 @@ void FullSinCurveL::layout(void)
 void FullSinCurveL::forward(void) {
     //cout << name_ << endl;
     auto buttom = buttom_.at(0);
-    int16_t value = buttom->value();
+    auto halfSin = dynamic_pointer_cast<HalfSinCurveL>(buttom);
+    if(halfSin) {
+	auto value = halfSin->valueSin();
+    }
     for(auto top:top_) {
         top->forward();
     }

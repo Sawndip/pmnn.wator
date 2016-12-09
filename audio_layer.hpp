@@ -114,6 +114,9 @@ public:
     virtual void forward(void);
     virtual int16_t value(void);
     virtual void snapshot(void);
+
+    SinBlob & valueSin();
+
 private:
     void fillArch(void);
     void fillSinArch(void);
