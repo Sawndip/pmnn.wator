@@ -148,7 +148,6 @@ public:
     virtual ~FullSinCurveL();
     
     /*
-     
      virtual void addTop(WatorBaseLPtr top);
      virtual void addButtom(WatorBaseLPtr buttom);
      virtual void layout(void);
@@ -171,8 +170,6 @@ private:
     void fillOrigArch(void);
     void fillEmptyArch(void);
     
-    bool isEarArch(void);
-    bool isPowerArch(void);
 private:
     deque<SinBlob> archs_;
     int dropCounter_ = 0;
