@@ -28,6 +28,8 @@ public:
     virtual bool diactive(void);
     virtual int16_t value(void);
 protected:
+    virtual void execBody(void);
+protected:
     deque<int16_t> blob_;
     //int iMaxWaveWidth_ = 100*48*1024;
     int iMaxWaveWidth_ = 10*48*1024;
@@ -54,6 +56,8 @@ public:
     virtual ~WatorAudioWave2L();
     virtual void forward(void);
     virtual int16_t value(void);
+protected:
+    virtual void execBody(void);
 private:
     void forwardOneWave(const string &path);
 };
@@ -117,6 +121,8 @@ public:
 
     SinBlob & valueSin();
 
+protected:
+    virtual void execBody(void);
 private:
     void fillArch(void);
     void fillSinArch(void);
@@ -167,6 +173,8 @@ public:
     virtual void forward(void);
     virtual int16_t value(void);
     virtual void snapshot(void);
+protected:
+    virtual void execBody(void);
 private:
     void fillArch(void);
     void fillSinArch(void);

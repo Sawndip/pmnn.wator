@@ -4,6 +4,7 @@
 #include <string>
 #include <numeric>
 #include <iomanip>
+#include <thread>
 using namespace std;
 
 
@@ -19,6 +20,9 @@ WatorNet::WatorNet(WatorBaseLPtr entry)
 }
 void WatorNet::train(void) {
     entry_->forward();
+    auto bindOperation = std::bind(&WatorBaseL::operator(), entry_);
+    std::thread t(bindOperation);
+    t.join();
 }
 void WatorNet::layout(void) {
   entry_->layout();

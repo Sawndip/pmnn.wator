@@ -5,10 +5,18 @@
 using namespace std;
 #include "pulse.hpp"
 
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
 
 #define NAME_(x) {x->name(#x);}
 
+#define NAME__(x) {x.name(#x);}
+
 int main() {
+    boost::log::core::get()->set_filter (
+                                         boost::log::trivial::severity >= boost::log::trivial::warning
+                                         );
 /*
   shared_ptr<WatorAudioWaveL> audio = make_shared<WatorAudioWaveL>();
   NAME_(audio);
@@ -78,7 +86,6 @@ int main() {
     hide9->setDAF(0.5);
     hide10->setDAF(0.5);
 */
-
     shared_ptr<WatorAudioWave2L> audio = make_shared<WatorAudioWave2L>();
     NAME_(audio);
     shared_ptr<HalfSinCurveL> halfSin = make_shared<HalfSinCurveL>();
@@ -95,7 +102,7 @@ int main() {
     halfSin->addButtom(audio);
     fullSin->addButtom(halfSin);
     out->addButtom(fullSin);
-    
+
     
   WatorNet net(audio);
   net.layout();

@@ -4,12 +4,16 @@
 #include <string>
 #include <numeric>
 #include <iomanip>
+#include <thread>
 using namespace std;
 
 #include <opencv/highgui.h>
 //#include <opencv2/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
 
 #include "audio_layer.hpp"
 #include "base_layer.hpp"
@@ -17,7 +21,7 @@ using namespace std;
 
 
 
-#define DUMP_VAR(x) {cout << __LINE__ << ":" #x "=<" << x << ">" << endl;}
+#define DUMP_VAR(x) {cout << __FILE__ << __LINE__ << ":" #x "=<" << x << ">" << endl;}
 
 
 const unsigned long iConstWaveGraphWidth = 3600*5;
@@ -28,6 +32,10 @@ const double dConstDeActiveStep = 0.1;
 
 WatorAudioWaveL::WatorAudioWaveL()
 :WatorInputL() {
+    DUMP_VAR(this);
+}
+void WatorAudioWaveL::execBody(void) {
+    DUMP_VAR(this);
 }
 
 void WatorAudioWaveL::forwardOneWave(const string &path){
@@ -215,15 +223,26 @@ void WatorAudioWaveL::snapshot(void){
 
 WatorAudioWave2L::WatorAudioWave2L()
 :WatorAudioWaveL(){
+    DUMP_VAR(this);
 }
 WatorAudioWave2L::~WatorAudioWave2L() {
 }
-
+void WatorAudioWave2L::execBody(void) {
+    DUMP_VAR(this);
+}
 
 
 void WatorAudioWave2L::forward(void) {
+/*
     for(int i = 0;i < 1;i++) {
         this->forwardOneWave("./waveform/myRecording09.wav");
+    }
+*/
+    for(auto top:top_) {
+        auto bindOperation = std::bind(&WatorBaseL::operator(), top);
+        std::thread t(bindOperation);
+        t.detach();
+        top->forward();
     }
 }
 
@@ -243,9 +262,6 @@ void WatorAudioWave2L::forwardOneWave(const string &path){
         }
         if(blob_.size() > iMaxWaveWidth_) {
             blob_.pop_front();
-        }
-        for(auto top:top_) {
-            top->forward();
         }
     }
 }
@@ -319,8 +335,12 @@ HalfSinCurveL::HalfSinCurveL()
     DUMP_VAR(name_);
     DUMP_VAR(archWidthCutMin_);
     DUMP_VAR(archWidthCutMax_);
+    DUMP_VAR(this);
 }
 HalfSinCurveL::~HalfSinCurveL() {
+}
+void HalfSinCurveL::execBody(void) {
+    DUMP_VAR(this);
 }
 
 void HalfSinCurveL::layout(void)
@@ -343,6 +363,7 @@ void HalfSinCurveL::layout(void)
 }
 
 void HalfSinCurveL::forward(void) {
+/*
     //cout << name_ << endl;
     auto buttom = buttom_.at(0);
     int16_t value = buttom->value();
@@ -365,7 +386,11 @@ void HalfSinCurveL::forward(void) {
     if(absVal > maxHeight_) {
         maxHeight_ = absVal;
     }
+ */
     for(auto top:top_) {
+        auto bindOperation = std::bind(&WatorBaseL::operator(), top);
+        std::thread t(bindOperation);
+        t.detach();
         top->forward();
     }
 }
@@ -465,8 +490,13 @@ SinBlob & HalfSinCurveL::valueSin() {
 FullSinCurveL::FullSinCurveL()
 :WatorHiddenL(){
     DUMP_VAR(name_);
+    DUMP_VAR(this);
 }
 FullSinCurveL::~FullSinCurveL() {
+}
+
+void FullSinCurveL::execBody(void) {
+    DUMP_VAR(this);
 }
 
 void FullSinCurveL::layout(void)
@@ -490,12 +520,17 @@ void FullSinCurveL::layout(void)
 
 void FullSinCurveL::forward(void) {
     //cout << name_ << endl;
+/*
     auto buttom = buttom_.at(0);
     auto halfSin = dynamic_pointer_cast<HalfSinCurveL>(buttom);
     if(halfSin) {
 	auto value = halfSin->valueSin();
     }
+*/
     for(auto top:top_) {
+        auto bindOperation = std::bind(&WatorBaseL::operator(), top);
+        std::thread t(bindOperation);
+        t.detach();
         top->forward();
     }
 }

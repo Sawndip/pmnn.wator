@@ -6,6 +6,7 @@
 #include <list>
 #include <tuple>
 #include <deque>
+#include <thread>
 using namespace std;
 
 #pragma once
@@ -16,6 +17,9 @@ static const int iInterActiveRateReciprocal = 4;
 
 class WatorBaseL {
 public:
+  void operator()();
+    
+    virtual void execBody(void);
   
   virtual void layout(void);
   virtual int width(void);
@@ -28,7 +32,6 @@ public:
   virtual int16_t active(void);
   virtual bool diactive(void);
   virtual int16_t value(void);
-    
     
 
 protected:
@@ -46,7 +49,8 @@ typedef shared_ptr<WatorBaseL> WatorBaseLPtr;
 class WatorInputL :public WatorBaseL {
 public:
   WatorInputL();
-  void addTop(WatorBaseLPtr top);
+
+    void addTop(WatorBaseLPtr top);
   virtual void layout(void);
   virtual int width(void);
     virtual void snapshot(void);
@@ -55,6 +59,9 @@ public:
   virtual int16_t active(void);
   virtual bool diactive(void);
     virtual int16_t value(void);
+    
+protected:
+    virtual void execBody(void);
 protected:
   vector<WatorBaseLPtr> top_;
   double dThreshold_ = 0.0;
@@ -67,6 +74,10 @@ public:
   WatorOutputL();
   void addButtom(WatorBaseLPtr buttom);
   virtual void layout(void);
+    
+    
+protected:
+    virtual void execBody(void);
 protected:
   vector<WatorBaseLPtr> buttom_;
 };
@@ -89,6 +100,9 @@ public:
   
     virtual void setDAF(double factor);
 
+    
+protected:
+    virtual void execBody(void);
 protected:
   vector<WatorBaseLPtr> top_;
   vector<WatorBaseLPtr> buttom_;

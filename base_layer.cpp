@@ -4,6 +4,7 @@
 #include <string>
 #include <numeric>
 #include <iomanip>
+#include <thread>
 using namespace std;
 
 #include <opencv/highgui.h>
@@ -14,7 +15,7 @@ using namespace std;
 #include "base_layer.hpp"
 
 
-#define DUMP_VAR(x) {cout << __LINE__ << ":" #x "=<" << x << ">" << endl;}
+#define DUMP_VAR(x) {cout << __FILE__ << __LINE__ << ":" #x "=<" << x << ">" << endl;}
 
 
 const unsigned long iConstWaveGraphWidth = 3600*5;
@@ -25,7 +26,15 @@ const double dConstDeActiveStep = 0.1;
 
 
 WatorBaseL::WatorBaseL(){
+    DUMP_VAR(this);
 }
+void WatorBaseL::operator()() {
+    this->execBody();
+}
+void WatorBaseL::execBody(void) {
+    DUMP_VAR(this);
+}
+
 void WatorBaseL::layout(void) {
 }
 void WatorBaseL::name(const string &name) 
@@ -58,7 +67,12 @@ void WatorBaseL::snapshot(void){
 
 WatorInputL::WatorInputL()
 :WatorBaseL(){
+    DUMP_VAR(this);
 }
+void WatorInputL::execBody(void) {
+    DUMP_VAR(this);
+}
+
 void WatorInputL::addTop (WatorBaseLPtr top) {
   top_.push_back(top);
 }
@@ -95,7 +109,12 @@ void WatorInputL::snapshot(void){
 
 WatorOutputL::WatorOutputL()
   :WatorBaseL(){
+      DUMP_VAR(this);
 }
+void WatorOutputL::execBody(void) {
+    DUMP_VAR(this);
+}
+
 void WatorOutputL::addButtom(WatorBaseLPtr buttom) {
   buttom_.push_back(buttom);
   depth_ = buttom->depth() +1;
@@ -111,7 +130,12 @@ void WatorOutputL::layout(void)
 
 WatorHiddenL::WatorHiddenL()
   :WatorBaseL(){
+      DUMP_VAR(this);
 }
+void WatorHiddenL::execBody(void) {
+    DUMP_VAR(this);
+}
+
 void WatorHiddenL::addTop(WatorBaseLPtr top)
 {
   top_.push_back(top);
