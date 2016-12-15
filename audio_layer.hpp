@@ -18,7 +18,7 @@ class WatorAudioWaveL :public WatorInputL {
 public:
     WatorAudioWaveL();
     
-    virtual void layout(void);
+    virtual void build(void);
     virtual int width(void);
     virtual void snapshot(void);
     void setDAF(double factor);
@@ -114,7 +114,7 @@ public:
     
     virtual void setDAF(double factor);
 */
-    virtual void layout(void);
+    virtual void build(void);
     virtual void forward(void);
     virtual int16_t value(void);
     virtual void snapshot(void);
@@ -169,7 +169,7 @@ public:
      
      virtual void setDAF(double factor);
      */
-    virtual void layout(void);
+    virtual void build(void);
     virtual void forward(void);
     virtual int16_t value(void);
     virtual void snapshot(void);

@@ -159,7 +159,7 @@ int WatorAudioWaveL::width(void) {
     return iMaxWaveWidth_;
 }
 
-void WatorAudioWaveL::layout(void) {
+void WatorAudioWaveL::build(void) {
     cout << name_ << ":m[" << iMaxWaveWidth_ << "]:i[" << interNumber_ << "]" << endl;
     for(auto top:top_) {
         top->layout();
@@ -343,7 +343,7 @@ void HalfSinCurveL::execBody(void) {
     DUMP_VAR(this);
 }
 
-void HalfSinCurveL::layout(void)
+void HalfSinCurveL::build(void)
 {
     auto buttom = buttom_.at(0);
     auto width = buttom->width();
@@ -499,7 +499,7 @@ void FullSinCurveL::execBody(void) {
     DUMP_VAR(this);
 }
 
-void FullSinCurveL::layout(void)
+void FullSinCurveL::build(void)
 {
     auto buttom = buttom_.at(0);
     auto width = buttom->width();

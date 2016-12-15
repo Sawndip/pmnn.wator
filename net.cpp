@@ -19,13 +19,13 @@ WatorNet::WatorNet(WatorBaseLPtr entry)
   :entry_(entry) {
 }
 void WatorNet::train(void) {
-    entry_->forward();
-    auto bindOperation = std::bind(&WatorBaseL::operator(), entry_);
-    std::thread t(bindOperation);
-    t.join();
+    //entry_->forward();
 }
-void WatorNet::layout(void) {
-  entry_->layout();
+void WatorNet::build(void) {
+  entry_->build();
+  auto bindOperation = std::bind(&WatorBaseL::operator(), entry_);
+  std::thread t(bindOperation);
+  t.join();
 }
 
 void WatorNet::snapshot(void) {

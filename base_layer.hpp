@@ -21,7 +21,7 @@ public:
     
     virtual void execBody(void);
   
-  virtual void layout(void);
+  virtual void build(void);
   virtual int width(void);
   virtual void snapshot(void);
   
@@ -51,7 +51,7 @@ public:
   WatorInputL();
 
     void addTop(WatorBaseLPtr top);
-  virtual void layout(void);
+  virtual void build(void);
   virtual int width(void);
     virtual void snapshot(void);
 
@@ -73,7 +73,7 @@ class WatorOutputL :public WatorBaseL {
 public:
   WatorOutputL();
   void addButtom(WatorBaseLPtr buttom);
-  virtual void layout(void);
+  virtual void build(void);
     
     
 protected:
@@ -89,7 +89,7 @@ public:
   virtual void addTop(WatorBaseLPtr top);
   virtual void addButtom(WatorBaseLPtr buttom);
 
-  virtual void layout(void);
+  virtual void build(void);
   virtual void forward(void);
     virtual int width(void);
     virtual void snapshot(void);

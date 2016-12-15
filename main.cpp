@@ -105,7 +105,7 @@ int main() {
 
     
   WatorNet net(audio);
-  net.layout();
+  net.build();
   net.train();
   net.snapshot();
   return 0;

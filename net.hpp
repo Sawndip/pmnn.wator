@@ -16,7 +16,7 @@ class WatorNet {
 public:
   WatorNet(WatorBaseLPtr entry);
   void train(void);
-  void layout(void);
+  void build(void);
   void snapshot(void);
 private:
   WatorBaseLPtr entry_;

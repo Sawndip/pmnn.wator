@@ -35,7 +35,7 @@ void WatorBaseL::execBody(void) {
     DUMP_VAR(this);
 }
 
-void WatorBaseL::layout(void) {
+void WatorBaseL::build(void) {
 }
 void WatorBaseL::name(const string &name) 
 {
@@ -76,7 +76,7 @@ void WatorInputL::execBody(void) {
 void WatorInputL::addTop (WatorBaseLPtr top) {
   top_.push_back(top);
 }
-void WatorInputL::layout(void) {
+void WatorInputL::build(void) {
   cout << name_ << endl;
   for(auto top:top_) {
     top->layout();
@@ -119,7 +119,7 @@ void WatorOutputL::addButtom(WatorBaseLPtr buttom) {
   buttom_.push_back(buttom);
   depth_ = buttom->depth() +1;
 }
-void WatorOutputL::layout(void)
+void WatorOutputL::build(void)
 {
   for(int i = 0 ;i < depth_ ;i++) {
     cout << "  ";
@@ -145,7 +145,7 @@ void WatorHiddenL::addButtom(WatorBaseLPtr buttom)
   buttom_.push_back(buttom);
   depth_ = buttom->depth() +1;
 }
-void WatorHiddenL::layout(void)
+void WatorHiddenL::build(void)
 {
     auto buttom = buttom_.at(0);
     auto width = buttom->width();
