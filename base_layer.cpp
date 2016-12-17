@@ -79,7 +79,7 @@ void WatorInputL::addTop (WatorBaseLPtr top) {
 void WatorInputL::build(void) {
   cout << name_ << endl;
   for(auto top:top_) {
-    top->layout();
+    top->build();
   }
 }
 
@@ -160,7 +160,7 @@ void WatorHiddenL::build(void)
   }
   cout << name_ << ":m[" << iMaxWaveWidth_ << "]:i[" << interNumber_ << "]" << endl;
   for(auto top:top_) {
-    top->layout();
+    top->build();
   }
 }
 

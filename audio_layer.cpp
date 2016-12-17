@@ -162,7 +162,7 @@ int WatorAudioWaveL::width(void) {
 void WatorAudioWaveL::build(void) {
     cout << name_ << ":m[" << iMaxWaveWidth_ << "]:i[" << interNumber_ << "]" << endl;
     for(auto top:top_) {
-        top->layout();
+        top->build();
     }
 }
 void WatorAudioWaveL::snapshot(void){
@@ -231,7 +231,6 @@ void WatorAudioWave2L::execBody(void) {
     DUMP_VAR(this);
 }
 
-
 void WatorAudioWave2L::forward(void) {
 /*
     for(int i = 0;i < 1;i++) {
@@ -239,9 +238,6 @@ void WatorAudioWave2L::forward(void) {
     }
 */
     for(auto top:top_) {
-        auto bindOperation = std::bind(&WatorBaseL::operator(), top);
-        std::thread t(bindOperation);
-        t.detach();
         top->forward();
     }
 }
@@ -358,7 +354,10 @@ void HalfSinCurveL::build(void)
     }
     cout << name_ << ":m[" << iMaxWaveWidth_ << "]:i[" << interNumber_ << "]" << endl;
     for(auto top:top_) {
-        top->layout();
+        top->build();
+        auto bindOperation = std::bind(&WatorBaseL::operator(), top);
+        std::thread t(bindOperation);
+        t.detach();
     }
 }
 
@@ -388,9 +387,6 @@ void HalfSinCurveL::forward(void) {
     }
  */
     for(auto top:top_) {
-        auto bindOperation = std::bind(&WatorBaseL::operator(), top);
-        std::thread t(bindOperation);
-        t.detach();
         top->forward();
     }
 }
@@ -514,7 +510,10 @@ void FullSinCurveL::build(void)
     }
     cout << name_ << ":m[" << iMaxWaveWidth_ << "]:i[" << interNumber_ << "]" << endl;
     for(auto top:top_) {
-        top->layout();
+        auto bindOperation = std::bind(&WatorBaseL::operator(), top);
+        std::thread t(bindOperation);
+        t.detach();
+        top->build();
     }
 }
 
@@ -528,9 +527,6 @@ void FullSinCurveL::forward(void) {
     }
 */
     for(auto top:top_) {
-        auto bindOperation = std::bind(&WatorBaseL::operator(), top);
-        std::thread t(bindOperation);
-        t.detach();
         top->forward();
     }
 }
