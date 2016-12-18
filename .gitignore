@@ -31,3 +31,4 @@
 *.out.dSYM
 *.png
 dump
+obj
