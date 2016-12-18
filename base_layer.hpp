@@ -7,6 +7,7 @@
 #include <tuple>
 #include <deque>
 #include <thread>
+#include <atomic>
 using namespace std;
 
 #pragma once
@@ -37,11 +38,16 @@ public:
 protected:
   WatorBaseL();
   virtual void execBody(void);
+
+
 protected:
   string name_;
   int16_t depth_ = 0;
   std::thread t_;
 
+
+protected:
+  static atomic_bool isRunning;
   
 };
 

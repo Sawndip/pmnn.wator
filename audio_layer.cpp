@@ -24,7 +24,8 @@ using namespace std;
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
-#define DUMP_VAR(x) {BOOST_LOG_TRIVIAL(debug) << __func__ <<":"<< __LINE__ << ":" #x "=<" << x << ">" << endl;}
+#define DUMP_VAR(x) {BOOST_LOG_TRIVIAL(debug) << typeid(*this).name() \
+<< "::" << __func__ << ":" << __LINE__ << " " #x "=<" << x << ">" << endl;}
 
 
 const unsigned long iConstWaveGraphWidth = 3600*5;
@@ -169,6 +170,7 @@ void WatorAudioWaveL::build(void) {
     for(auto top:top_) {
         top->build();
     }
+    WatorBaseL::build();
 }
 void WatorAudioWaveL::snapshot(void){
     DUMP_VAR(name_);
@@ -238,6 +240,9 @@ void WatorAudioWave2L::execBody(void) {
     for(int i = 0;i < 1;i++) {
         this->forwardOneWave("./waveform/myRecording09.wav");
     }
+    DUMP_VAR(isRunning);
+    isRunning = false;
+    DUMP_VAR(isRunning);
 }
 
 void WatorAudioWave2L::forward(void) {
@@ -340,9 +345,11 @@ HalfSinCurveL::HalfSinCurveL()
 HalfSinCurveL::~HalfSinCurveL() {
 }
 void HalfSinCurveL::execBody(void) {
-    DUMP_VAR(this);
+    DUMP_VAR(name_);
     DUMP_VAR(std::this_thread::get_id());
-    this->forward();
+    while(isRunning) {
+      this->forward();
+    }
 }
 
 void HalfSinCurveL::build(void)
@@ -362,6 +369,7 @@ void HalfSinCurveL::build(void)
     for(auto top:top_) {
         top->build();
     }
+    WatorBaseL::build();
 }
 
 void HalfSinCurveL::forward(void) {
@@ -493,7 +501,8 @@ FullSinCurveL::~FullSinCurveL() {
 }
 
 void FullSinCurveL::execBody(void) {
-    DUMP_VAR(this);
+    DUMP_VAR(name_);
+    this->forward();
 }
 
 void FullSinCurveL::build(void)
@@ -513,6 +522,7 @@ void FullSinCurveL::build(void)
     for(auto top:top_) {
         top->build();
     }
+    WatorBaseL::build();
 }
 
 void FullSinCurveL::forward(void) {

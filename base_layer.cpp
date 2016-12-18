@@ -18,7 +18,8 @@ using namespace std;
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
-#define DUMP_VAR(x) {BOOST_LOG_TRIVIAL(debug) << __func__ << ":" << __LINE__ << ":" #x "=<" << x << ">" << endl;}
+#define DUMP_VAR(x) {BOOST_LOG_TRIVIAL(debug) << typeid(*this).name() \
+<< "::" << __func__ << ":" << __LINE__ << " " #x "=<" << x << ">" << endl;}
 
 
 const unsigned long iConstWaveGraphWidth = 3600*5;
@@ -47,7 +48,9 @@ void WatorBaseL::build(void) {
 
 void WatorBaseL::wait(void) {
   DUMP_VAR(t_.get_id());
-  t_.join();
+  if(t_.joinable()) {
+    t_.join();
+  }
   DUMP_VAR(t_.get_id());
 }
 
@@ -77,6 +80,7 @@ void WatorBaseL::snapshot(void){
     
 }
 
+atomic_bool WatorBaseL::isRunning(true);
 
 
 WatorInputL::WatorInputL()
