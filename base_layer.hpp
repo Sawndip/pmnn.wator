@@ -18,8 +18,6 @@ static const int iInterActiveRateReciprocal = 4;
 class WatorBaseL {
 public:
   void operator()();
-    
-    virtual void execBody(void);
   
   virtual void build(void);
   virtual int width(void);
@@ -36,6 +34,7 @@ public:
 
 protected:
   WatorBaseL();
+  virtual void execBody(void);
 protected:
   string name_;
   int16_t depth_ = 0;
@@ -50,15 +49,15 @@ class WatorInputL :public WatorBaseL {
 public:
   WatorInputL();
 
-    void addTop(WatorBaseLPtr top);
+  void addTop(WatorBaseLPtr top);
   virtual void build(void);
   virtual int width(void);
-    virtual void snapshot(void);
+  virtual void snapshot(void);
 
   virtual void forward(void);
   virtual int16_t active(void);
   virtual bool diactive(void);
-    virtual int16_t value(void);
+  virtual int16_t value(void);
     
 protected:
     virtual void execBody(void);
@@ -91,14 +90,14 @@ public:
 
   virtual void build(void);
   virtual void forward(void);
-    virtual int width(void);
-    virtual void snapshot(void);
+  virtual int width(void);
+  virtual void snapshot(void);
 
   virtual int16_t active(void);
   virtual bool diactive(void);
-    virtual int16_t value(void);
+  virtual int16_t value(void);
   
-    virtual void setDAF(double factor);
+  virtual void setDAF(double factor);
 
     
 protected:
