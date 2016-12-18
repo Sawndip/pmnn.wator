@@ -257,7 +257,6 @@ void WatorAudioWave2L::forwardOneWave(const string &path){
     if(waves.empty()) {
         return ;
     }
-    
     auto wave = waves.begin();
     DUMP_VAR(wave->size());
     for(int i = 0;i < wave->size() -1;i++) {
