@@ -8,8 +8,9 @@ LDFLAGS += -L/usr/local/lib
 LDFLAGS += -lopencv_imgproc
 LDFLAGS += -lopencv_highgui
 LDFLAGS += -lopencv_core
-LDFLAGS += -lboost_log-mt
-LDFLAGS += -lboost_log_setup-mt
+LDFLAGS += -lboost_log
+LDFLAGS += -lboost_log_setup
+LDFLAGS += -lpthread
 
 SRC := main.cpp
 SRC += pulse.cpp
@@ -18,10 +19,22 @@ SRC += audio_layer.cpp
 SRC += net.cpp
 SRC += waveform/wave.cpp
 
+OBJ := $(SRC:.cpp=.o)
 
-all:
-	clang++ $(CXXFLAGS) $(SRC) $(LDFLAGS) -o move.out
+Target := pmmn.out
+
+.PHONY: all run dump-clean clean
+
+all:$(Target)
+
+$(Target):$(OBJ)
+	clang++ $(CXXFLAGS) $^ $(LDFLAGS) -o $@
+
 run:all dump-clean
-	./move.out
+	./pmmn.out
+clean:
+	rm -rf *.out
 dump-clean:
 	rm -rf dump/*.png
+
+
