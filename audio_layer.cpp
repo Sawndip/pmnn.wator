@@ -21,7 +21,10 @@ using namespace std;
 
 
 
-#define DUMP_VAR(x) {cout << __FILE__ << __LINE__ << ":" #x "=<" << x << ">" << endl;}
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+#define DUMP_VAR(x) {BOOST_LOG_TRIVIAL(debug) << __func__ <<":"<< __LINE__ << ":" #x "=<" << x << ">" << endl;}
 
 
 const unsigned long iConstWaveGraphWidth = 3600*5;
@@ -161,6 +164,8 @@ int WatorAudioWaveL::width(void) {
 
 void WatorAudioWaveL::build(void) {
     cout << name_ << ":m[" << iMaxWaveWidth_ << "]:i[" << interNumber_ << "]" << endl;
+    DUMP_VAR(name_);
+    DUMP_VAR(name_);
     for(auto top:top_) {
         top->build();
     }
@@ -229,14 +234,13 @@ WatorAudioWave2L::~WatorAudioWave2L() {
 }
 void WatorAudioWave2L::execBody(void) {
     DUMP_VAR(this);
-}
-
-void WatorAudioWave2L::forward(void) {
-/*
+    DUMP_VAR(std::this_thread::get_id());
     for(int i = 0;i < 1;i++) {
         this->forwardOneWave("./waveform/myRecording09.wav");
     }
-*/
+}
+
+void WatorAudioWave2L::forward(void) {
     for(auto top:top_) {
         top->forward();
     }
@@ -337,6 +341,8 @@ HalfSinCurveL::~HalfSinCurveL() {
 }
 void HalfSinCurveL::execBody(void) {
     DUMP_VAR(this);
+    DUMP_VAR(std::this_thread::get_id());
+    this->forward();
 }
 
 void HalfSinCurveL::build(void)
@@ -355,14 +361,10 @@ void HalfSinCurveL::build(void)
     cout << name_ << ":m[" << iMaxWaveWidth_ << "]:i[" << interNumber_ << "]" << endl;
     for(auto top:top_) {
         top->build();
-        auto bindOperation = std::bind(&WatorBaseL::operator(), top);
-        std::thread t(bindOperation);
-        t.detach();
     }
 }
 
 void HalfSinCurveL::forward(void) {
-/*
     //cout << name_ << endl;
     auto buttom = buttom_.at(0);
     int16_t value = buttom->value();
@@ -385,7 +387,6 @@ void HalfSinCurveL::forward(void) {
     if(absVal > maxHeight_) {
         maxHeight_ = absVal;
     }
- */
     for(auto top:top_) {
         top->forward();
     }
@@ -510,9 +511,6 @@ void FullSinCurveL::build(void)
     }
     cout << name_ << ":m[" << iMaxWaveWidth_ << "]:i[" << interNumber_ << "]" << endl;
     for(auto top:top_) {
-        auto bindOperation = std::bind(&WatorBaseL::operator(), top);
-        std::thread t(bindOperation);
-        t.detach();
         top->build();
     }
 }

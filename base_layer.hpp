@@ -15,11 +15,13 @@ static const int iInterActiveRateReciprocal = 4;
 
 
 
-class WatorBaseL {
+class WatorBaseL:public std::enable_shared_from_this<WatorBaseL> {
 public:
   void operator()();
   
   virtual void build(void);
+  virtual void wait(void);
+
   virtual int width(void);
   virtual void snapshot(void);
   
@@ -38,6 +40,7 @@ protected:
 protected:
   string name_;
   int16_t depth_ = 0;
+  std::thread t_;
 
   
 };
@@ -49,8 +52,11 @@ class WatorInputL :public WatorBaseL {
 public:
   WatorInputL();
 
-  void addTop(WatorBaseLPtr top);
   virtual void build(void);
+  virtual void wait(void);
+
+  void addTop(WatorBaseLPtr top);
+
   virtual int width(void);
   virtual void snapshot(void);
 
@@ -71,8 +77,11 @@ private:
 class WatorOutputL :public WatorBaseL {
 public:
   WatorOutputL();
-  void addButtom(WatorBaseLPtr buttom);
+
   virtual void build(void);
+  virtual void wait(void);
+
+  void addButtom(WatorBaseLPtr buttom);
     
     
 protected:
@@ -85,10 +94,12 @@ protected:
 class WatorHiddenL :public WatorBaseL {
 public:
   WatorHiddenL();
+  virtual void build(void);
+  virtual void wait(void);
+
   virtual void addTop(WatorBaseLPtr top);
   virtual void addButtom(WatorBaseLPtr buttom);
 
-  virtual void build(void);
   virtual void forward(void);
   virtual int width(void);
   virtual void snapshot(void);

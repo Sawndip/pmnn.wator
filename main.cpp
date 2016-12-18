@@ -15,7 +15,7 @@ using namespace std;
 
 int main() {
     boost::log::core::get()->set_filter (
-                                         boost::log::trivial::severity >= boost::log::trivial::warning
+                                         boost::log::trivial::severity >= boost::log::trivial::trace
                                          );
 /*
   shared_ptr<WatorAudioWaveL> audio = make_shared<WatorAudioWaveL>();

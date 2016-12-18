@@ -15,7 +15,10 @@ using namespace std;
 #include "base_layer.hpp"
 
 
-#define DUMP_VAR(x) {cout << __FILE__ << __LINE__ << ":" #x "=<" << x << ">" << endl;}
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+#define DUMP_VAR(x) {BOOST_LOG_TRIVIAL(debug) << __func__ << ":" << __LINE__ << ":" #x "=<" << x << ">" << endl;}
 
 
 const unsigned long iConstWaveGraphWidth = 3600*5;
@@ -36,7 +39,18 @@ void WatorBaseL::execBody(void) {
 }
 
 void WatorBaseL::build(void) {
+  auto bindOperation = std::bind(&WatorBaseL::operator(),shared_from_this());
+  std::thread t(bindOperation);
+  t_ = std::move(t);
+  DUMP_VAR(t.get_id());
 }
+
+void WatorBaseL::wait(void) {
+  DUMP_VAR(t_.get_id());
+  t_.join();
+  DUMP_VAR(t_.get_id());
+}
+
 void WatorBaseL::name(const string &name) 
 {
   name_ = name;
@@ -81,6 +95,13 @@ void WatorInputL::build(void) {
   for(auto top:top_) {
     top->build();
   }
+  WatorBaseL::build();
+}
+void WatorInputL::wait(void) {
+  for(auto top:top_) {
+    top->wait();
+  }
+  WatorBaseL::wait();
 }
 
 void WatorInputL::forward(void){
@@ -125,7 +146,13 @@ void WatorOutputL::build(void)
     cout << "  ";
   }
   cout << name_ << endl;
+  WatorBaseL::build();
 }
+
+void WatorOutputL::wait(void) {
+  WatorBaseL::wait();
+}
+
 
 
 WatorHiddenL::WatorHiddenL()
@@ -162,6 +189,13 @@ void WatorHiddenL::build(void)
   for(auto top:top_) {
     top->build();
   }
+  WatorBaseL::build();
+}
+void WatorHiddenL::wait(void) {
+  for(auto top:top_) {
+    top->wait();
+  }
+  WatorBaseL::wait();
 }
 
 void WatorHiddenL::forward(void) {

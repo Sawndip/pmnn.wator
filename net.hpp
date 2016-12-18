@@ -15,8 +15,11 @@ using namespace std;
 class WatorNet {
 public:
   WatorNet(WatorBaseLPtr entry);
-  void train(void);
   void build(void);
+
+  void train(void);
+  void test(void);
+
   void snapshot(void);
 private:
   WatorBaseLPtr entry_;
