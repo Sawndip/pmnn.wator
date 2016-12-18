@@ -6,6 +6,8 @@ include_directories(waveform)
 include_directories(/usr/local/include)
 add_definitions(-DBOOST_LOG_DYN_LINK)
 
+link_directories(/usr/local/lib)
+
 
 set (SRC main.cpp
   pulse.cpp
@@ -16,12 +18,17 @@ set (SRC main.cpp
 )
 
 add_executable(pmmn.out ${SRC})
+
+if(APPLE)
+  set(BOOST boost_log-mt  boost_log_setup-mt )
+else(APPLE)
+  set(BOOST boost_log  boost_log_setup )
+endif(APPLE)
+
 target_link_libraries(pmmn.out
   opencv_imgproc
   opencv_highgui
   opencv_core
-  boost_log
-  boost_log_setup
+  ${BOOST}
   pthread
 )
-
