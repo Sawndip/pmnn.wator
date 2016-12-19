@@ -267,6 +267,7 @@ void WatorAudioWave2L::forwardOneWave(const string &path){
         if(blob_.size() > iMaxWaveWidth_) {
             blob_.pop_front();
         }
+	this->forward();
     }
 }
 int16_t WatorAudioWave2L::value(void) {
