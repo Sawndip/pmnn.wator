@@ -348,7 +348,7 @@ void HalfSinCurveL::execBody(void) {
     DUMP_VAR(name_);
     DUMP_VAR(std::this_thread::get_id());
     while(isRunning) {
-      this->forward();
+      this->process();
     }
 }
 
@@ -373,6 +373,12 @@ void HalfSinCurveL::build(void)
 }
 
 void HalfSinCurveL::forward(void) {
+    for(auto top:top_) {
+        top->forward();
+    }
+}
+
+void HalfSinCurveL::process(void) {
     //cout << name_ << endl;
     auto buttom = buttom_.at(0);
     int16_t value = buttom->value();
@@ -502,7 +508,10 @@ FullSinCurveL::~FullSinCurveL() {
 
 void FullSinCurveL::execBody(void) {
     DUMP_VAR(name_);
-    this->forward();
+    DUMP_VAR(std::this_thread::get_id());
+    while(isRunning) {
+      this->process();
+    }
 }
 
 void FullSinCurveL::build(void)
@@ -526,6 +535,12 @@ void FullSinCurveL::build(void)
 }
 
 void FullSinCurveL::forward(void) {
+    for(auto top:top_) {
+        top->forward();
+    }
+}
+
+void FullSinCurveL::process(void) {
     //cout << name_ << endl;
 /*
     auto buttom = buttom_.at(0);

@@ -131,6 +131,9 @@ private:
 
     bool isEarArch(void);
     bool isPowerArch(void);
+
+    void process(void);
+
 private:
     /// 48k samplate.
     int sampleRate_ = 48 *1024;
@@ -181,6 +184,8 @@ private:
     void fillOrigArch(void);
     void fillEmptyArch(void);
     
+    void process(void);
+
 private:
     deque<SinBlob> archs_;
     int dropCounter_ = 0;
