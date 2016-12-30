@@ -240,6 +240,18 @@ void WatorAudioWave2L::execBody(void) {
     for(int i = 0;i < 1;i++) {
         this->forwardOneWave("./waveform/myRecording09.wav");
     }
+    // wait for buffer out.
+    while(true) {
+        {
+            lock_guard<std::mutex> scopLock(mtxForwordBlob_);
+            if(forwordBlob_.empty()) {
+                break;
+            }
+        }
+        //DUMP_VAR(forwordBlob_.size());
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        cvForwordBlob_.notify_one();
+    }
     DUMP_VAR(isRunning);
     isRunning = false;
     DUMP_VAR(isRunning);
@@ -260,6 +272,7 @@ void WatorAudioWave2L::forwardOneWave(const string &path){
     auto wave = waves.begin();
     DUMP_VAR(wave->size());
     for(int i = 0;i < wave->size() -1;i++) {
+        // new data
         blob_.push_back(wave->at(i));
         if(std::abs(wave->at(i)) > maxHeight_) {
             maxHeight_ = std::abs(wave->at(i));
@@ -267,15 +280,21 @@ void WatorAudioWave2L::forwardOneWave(const string &path){
         if(blob_.size() > iMaxWaveWidth_) {
             blob_.pop_front();
         }
-	this->forward();
+        lock_guard<std::mutex> scopLock(mtxForwordBlob_);
+        forwordBlob_.push_back(wave->at(i));
+        cvForwordBlob_.notify_one();
+        this->forward();
     }
 }
 int16_t WatorAudioWave2L::value(void) {
-    if(blob_.size()>1) {
-        auto it = blob_.rbegin();
-        return *it;
+//    DUMP_VAR(forwordBlob_.size());
+    unique_lock<std::mutex> ulock(mtxForwordBlob_);
+    if(forwordBlob_.empty()) {
+        cvForwordBlob_.wait(ulock);
     }
-    return 0;
+    auto value = forwordBlob_.front();
+    forwordBlob_.pop_front();
+    return value;
 }
 
 
@@ -350,6 +369,8 @@ void HalfSinCurveL::execBody(void) {
     while(isRunning) {
       this->process();
     }
+    DUMP_VAR(name_);
+    DUMP_VAR(std::this_thread::get_id());
 }
 
 void HalfSinCurveL::build(void)

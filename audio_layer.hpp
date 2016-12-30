@@ -6,6 +6,8 @@
 #include <list>
 #include <tuple>
 #include <deque>
+#include <mutex>
+#include <condition_variable>
 using namespace std;
 
 #include "base_layer.hpp"
@@ -31,6 +33,11 @@ protected:
     virtual void execBody(void);
 protected:
     deque<int16_t> blob_;
+
+    deque<int16_t> forwordBlob_;
+    mutex mtxForwordBlob_;
+    condition_variable cvForwordBlob_;
+    
     //int iMaxWaveWidth_ = 100*48*1024;
     int iMaxWaveWidth_ = 10*48*1024;
     int interNumber_ = iMaxWaveWidth_/iInterActiveRateReciprocal;
