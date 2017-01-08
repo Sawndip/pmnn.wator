@@ -30,9 +30,10 @@ public:
   int depth(void);
   
   virtual void forward(void);
-  virtual int16_t active(void);
-  virtual bool diactive(void);
-  virtual int16_t value(void);
+
+  virtual deque<int16_t> active(void);
+  virtual deque<bool> diactive(void);
+  virtual deque<int16_t> value(void);
     
 
 protected:
@@ -67,9 +68,9 @@ public:
   virtual void snapshot(void);
 
   virtual void forward(void);
-  virtual int16_t active(void);
-  virtual bool diactive(void);
-  virtual int16_t value(void);
+  virtual deque<int16_t> active(void);
+  virtual deque<bool> diactive(void);
+  virtual deque<int16_t> value(void);
     
 protected:
     virtual void execBody(void);
@@ -110,9 +111,9 @@ public:
   virtual int width(void);
   virtual void snapshot(void);
 
-  virtual int16_t active(void);
-  virtual bool diactive(void);
-  virtual int16_t value(void);
+  virtual deque<int16_t> active(void);
+  virtual deque<bool> diactive(void);
+  virtual deque<int16_t> value(void);
   
   virtual void setDAF(double factor);
 
@@ -123,7 +124,7 @@ protected:
   vector<WatorBaseLPtr> top_;
   vector<WatorBaseLPtr> buttom_;
   
-  deque<int16_t> blob_;
+  deque<deque<int16_t>> blobs_;
   int iMaxWaveWidth_;
   int interNumber_;
   
@@ -133,8 +134,8 @@ protected:
   vector<int16_t> stepBuff_;
   int stepBuffInsertNumber_ = 0;
 
-  deque<bool> intermediate_;
-  deque<uint16_t> diffs_;
+  deque<deque<bool>> intermediate_;
+  deque<deque<uint16_t>> diffs_;
   double dThreshold_ = 0.0;
   double dDeativeFactor_ = 1.0;
     

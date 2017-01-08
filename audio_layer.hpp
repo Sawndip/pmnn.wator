@@ -26,15 +26,15 @@ public:
     void setDAF(double factor);
     
     virtual void forward(void);
-    virtual int16_t active(void);
-    virtual bool diactive(void);
-    virtual int16_t value(void);
+    virtual deque<int16_t> active(void);
+    virtual deque<bool> diactive(void);
+    virtual deque<int16_t> value(void);
 protected:
     virtual void execBody(void);
 protected:
-    deque<int16_t> blob_;
+    deque<deque<int16_t>> blob_;
 
-    deque<int16_t> forwordBlob_;
+    deque<deque<int16_t>> forwordBlob_;
     mutex mtxForwordBlob_;
     condition_variable cvForwordBlob_;
     
@@ -62,7 +62,7 @@ public:
     WatorAudioWave2L();
     virtual ~WatorAudioWave2L();
     virtual void forward(void);
-    virtual int16_t value(void);
+    virtual deque<int16_t> value(void);
 protected:
     virtual void execBody(void);
 private:
@@ -123,7 +123,7 @@ public:
 */
     virtual void build(void);
     virtual void forward(void);
-    virtual int16_t value(void);
+    virtual deque<int16_t> value(void);
     virtual void snapshot(void);
 
     SinBlob & valueSin();
@@ -152,7 +152,7 @@ private:
     
     bool archUp_ = false;
     SinBlob arch_;
-    deque<SinBlob> archs_;
+    deque<deque<SinBlob>> archs_;
 
     int dropCounter_ = 0;
     int keepCounter_ = 1;
@@ -181,7 +181,7 @@ public:
      */
     virtual void build(void);
     virtual void forward(void);
-    virtual int16_t value(void);
+    virtual deque<int16_t> value(void);
     virtual void snapshot(void);
 protected:
     virtual void execBody(void);
@@ -194,7 +194,7 @@ private:
     void process(void);
 
 private:
-    deque<SinBlob> archs_;
+    deque<deque<SinBlob>> archs_;
     int dropCounter_ = 0;
     int keepCounter_ = 1;
 };

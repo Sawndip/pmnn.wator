@@ -67,7 +67,7 @@ void WatorAudioWaveL::forwardOneWave(const string &path){
 
 void WatorAudioWaveL::forward(void){
     for(int i = 0;i < 1;i++) {
-        this->forwardOneWave("./waveform/myRecording09.wav");
+        this->forwardOneWave("./waveform/myRecording06.wav");
     }
 }
 
@@ -238,7 +238,7 @@ void WatorAudioWave2L::execBody(void) {
     DUMP_VAR(this);
     DUMP_VAR(std::this_thread::get_id());
     for(int i = 0;i < 1;i++) {
-        this->forwardOneWave("./waveform/myRecording09.wav");
+        this->forwardOneWave("./waveform/myRecording06.wav");
     }
     // wait for buffer out.
     while(true) {
