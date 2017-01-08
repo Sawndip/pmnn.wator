@@ -248,48 +248,48 @@ void WatorHiddenL::snapshot(void){
     int onechannelHeight = heightLow + heightFull + heightDiff;
     cv::Mat mat( blobs_.size() *onechannelHeight ,width,CV_8UC3,cv::Scalar(255,255,255));
     for(int ch = 0;ch < blobs_.size();ch++){
-        auto blob = blobs_.at(ch);
-    for(int i = 0;i < blob.size();i++) {
+      auto blob = blobs_.at(ch);
+      for(int i = 0;i < blob.size();i++) {
         auto slip = i / iConstWaveGraphWidth;
         if(i % iConstWaveGraphWidth == 0){
-            //mat = white;
-            mat = cv::Scalar(255,255,255);
+          //mat = white;
+          mat = cv::Scalar(255,255,255);
         }
         if(i % iConstWaveGraphWidth == iConstWaveGraphWidth-1 || i == blob.size() -1) {
-            string path = "dump/wave.out.";
-            std::stringstream ss;
-            ss << name_;
-            ss << ".";
-            ss << std::setfill('0') << std::setw(8) << slip;
-            path += ss.str();
-            path += ".png";
-            cv::imwrite( path,mat);
+          string path = "dump/wave.out.";
+          std::stringstream ss;
+          ss << name_;
+          ss << ".";
+          ss << std::setfill('0') << std::setw(8) << slip;
+          path += ss.str();
+          path += ".png";
+          cv::imwrite( path,mat);
         }
         int16_t baseLineWavFull = heightFull/2;
         int16_t baseLineWavLow =  heightFull + heightLow/2;
         int16_t val = blob.at(i);
         int16_t yWaveFull = (int16_t)( val*(heightFull) / (2*maxHeight_)) + baseLineWavFull;;
-        
+
         int16_t yWaveLow = heightFull;
         if(std::abs(val) < heightLow/2) {
-            yWaveLow = val + baseLineWavLow;
+          yWaveLow = val + baseLineWavLow;
         }
-        
+
         int x = i % iConstWaveGraphWidth;
         cv::line(mat,cv::Point(x,yWaveFull),cv::Point(x,baseLineWavFull), cv::Scalar(0,0,255));
-        
+
         cv::line(mat,cv::Point(x,yWaveLow),cv::Point(x,baseLineWavLow), cv::Scalar(0,0,255));
-        
+
         mat.at<cv::Vec3b>(baseLineWavFull, x) = cv::Vec3b(0,0,0);
-        
+
         mat.at<cv::Vec3b>(baseLineWavLow, x) = cv::Vec3b(0,0,0);
-        
-        
+
+
         int16_t yDiff = heightLow + heightFull + heightDiff/2;
         if(i < intermediate_.at(ch).size() && intermediate_.at(ch).at(i)) {
-            mat.at<cv::Vec3b>(yDiff, x) = cv::Vec3b(0,0,0);
+          mat.at<cv::Vec3b>(yDiff, x) = cv::Vec3b(0,0,0);
         }
-    }
+      }
     }
     for(auto top:top_) {
         top->snapshot();
