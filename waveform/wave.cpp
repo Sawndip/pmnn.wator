@@ -96,17 +96,24 @@ void writeWave(const string &path,const deque<deque<int16_t>> &data){
     f << "WAVEfmt ";     // (chunk size to be filled in later)
     write_word( f,     16, 4 );  // no extension data
     write_word( f,      1, 2 );  // PCM - integer samples
-    write_word( f,      1, 2 );  // 1 channels (stereo file)
+    write_word( f,      data.size(), 2 );  // 1 channels (stereo file)
     write_word( f,  44100, 4 );  // samples per second (Hz)
-    write_word( f,  88200, 4 );  // (Sample Rate * BitsPerSample * Channels) / 8
-    write_word( f,      2, 2 );  // data block size (size of two integer samples, one for each channel, in bytes)
+    write_word( f,  88200 * data.size(), 4 );  // (Sample Rate * BitsPerSample * Channels) / 8
+    write_word( f,      2*data.size(), 2 );  // data block size (size of two integer samples, one for each channel, in bytes)
     write_word( f,     16, 2 );  // number of bits per sample (use a multiple of 8)
     
+    
+    int dataSize = 0;
+    for (auto channel:data) {
+        dataSize += channel.size()*sizeof(int16_t);
+    }
     // Write the data chunk header
     f << "data";  // (chunk size to be filled in later)
-    write_word( f,  data.size()*sizeof(int16_t), 4 );
-    for(auto wave:data) {
-        write_word( f,      wave, 2 );
+    write_word( f,  dataSize, 4 );
+    for(auto channel:data) {
+        for(auto wave:channel) {
+            write_word( f,      wave, 2 );
+        }
     }
 }
 
