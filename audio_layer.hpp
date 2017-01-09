@@ -126,18 +126,18 @@ public:
     virtual deque<int16_t> value(void);
     virtual void snapshot(void);
 
-    SinBlob & valueSin();
+    deque<SinBlob> & valueSin();
 
 protected:
     virtual void execBody(void);
 private:
-    void fillArch(void);
-    void fillSinArch(void);
-    void fillOrigArch(void);
-    void fillEmptyArch(void);
+    void fillArch(int channel);
+    void fillSinArch(int channel);
+    void fillOrigArch(int channel);
+    void fillEmptyArch(int channel);
 
-    bool isEarArch(void);
-    bool isPowerArch(void);
+    bool isEarArch(int channel);
+    bool isPowerArch(int channel);
 
     void process(void);
 
@@ -151,7 +151,7 @@ private:
     const int earRateMin_ = 16;
     
     bool archUp_ = false;
-    SinBlob arch_;
+    deque<SinBlob> archProcess_;
     deque<deque<SinBlob>> archs_;
 
     int dropCounter_ = 0;

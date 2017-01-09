@@ -422,26 +422,31 @@ void HalfSinCurveL::process(void) {
     //cout << name_ << endl;
     auto buttom = buttom_.at(0);
     auto values = buttom->value();
-    for(auto value:values) {
-    if(value > 0) {
-        if(archUp_ == false) {
-            this->fillArch();
+    for(int channel = 0;channel < values.size();channel++) {
+        auto value = values.at(channel);
+        //
+        if(archProcess_.size() <= channel) {
+            archProcess_.push_back({});
         }
-        archUp_ = true;
-    } else if(value < 0){
-        if(archUp_ == true) {
-            this->fillArch();
-        }
-        archUp_ = false;
-    } else {
+        if(value > 0) {
+            if(archUp_ == false) {
+                this->fillArch(channel);
+            }
+            archUp_ = true;
+        } else if(value < 0){
+            if(archUp_ == true) {
+                this->fillArch(channel);
+            }
+            archUp_ = false;
+        } else {
         /// zero continue;
-    }
-    arch_.push(value);
+        }
+        archProcess_.at(channel).push(value);
 
-    uint16_t absVal = std::abs(value);
-    if(absVal > maxHeight_) {
-        maxHeight_ = absVal;
-    }
+        uint16_t absVal = std::abs(value);
+        if(absVal > maxHeight_) {
+            maxHeight_ = absVal;
+        }
     }
     for(auto top:top_) {
         top->forward();
@@ -451,91 +456,99 @@ void HalfSinCurveL::process(void) {
 const double dConstPI = std::acos(-1.0);
 const int iConstArchPowerThrelod = 128;
 
-void HalfSinCurveL::fillSinArch(void) {
+void HalfSinCurveL::fillSinArch(int channel) {
     // forwod data to next layer.
     //DUMP_VAR(arch_.size());
-    for(int i = 0 ;i < arch_.size();i++){
-        int16_t value = arch_.max() * std::sin( (double) i * dConstPI/(double)(arch_.size() -1) );
+    auto arch = archProcess_.at(channel);
+    auto blob = blobs_.at(channel);
+    for(int i = 0 ;i < arch.size();i++){
+        int16_t value = arch.max() * std::sin( (double) i * dConstPI/(double)(arch.size() -1) );
         //DUMP_VAR(value);
         if(archUp_) {
-            blob_.push_back(value);
+            blob.push_back(value);
         } else {
-            blob_.push_back(0-value);
+            blob.push_back(0-value);
         }
-        if(blob_.size() > iMaxWaveWidth_) {
-            blob_.pop_front();
+        if(blob.size() > iMaxWaveWidth_) {
+            blob.pop_front();
         }
     }
-    //DUMP_VAR(blob_.size());
-    archs_.push_back(arch_);
+    //DUMP_VAR(blob.size());
+    archs_.at(channel).push_back(arch);
 }
 
-void HalfSinCurveL::fillOrigArch(void) {
-    for(int i = 0 ;i < arch_.size();i++){
-        int16_t value = arch_.at(i);
+void HalfSinCurveL::fillOrigArch(int channel) {
+    auto arch = archProcess_.at(channel);
+    auto blob = blobs_.at(channel);
+    for(int i = 0 ;i < arch.size();i++){
+        int16_t value = arch.at(i);
         //DUMP_VAR(value);
-        blob_.push_back(value);
-        if(blob_.size() > iMaxWaveWidth_) {
-            blob_.pop_front();
+        blob.push_back(value);
+        if(blob.size() > iMaxWaveWidth_) {
+            blob.pop_front();
         }
     }
-    //DUMP_VAR(blob_.size());
-    archs_.push_back(arch_);
+    //DUMP_VAR(blob.size());
+    archs_.at(channel).push_back(arch);
 }
 
-void HalfSinCurveL::fillEmptyArch(void) {
-    for(int i = 0 ;i < arch_.size();i++) {
-        blob_.push_back(0);
-        if(blob_.size() > iMaxWaveWidth_) {
-            blob_.pop_front();
+void HalfSinCurveL::fillEmptyArch(int channel) {
+    auto arch = archProcess_.at(channel);
+    auto blob = blobs_.at(channel);
+    for(int i = 0 ;i < arch.size();i++) {
+        blob.push_back(0);
+        if(blob.size() > iMaxWaveWidth_) {
+            blob.pop_front();
         }
     }
-    EmptySinBlob empty(arch_.size());
-    archs_.push_back(empty);
+    EmptySinBlob empty(arch.size());
+    archs_.at(channel).push_back(empty);
 }
 
-bool HalfSinCurveL::isEarArch(void) {
-    if(arch_.size() > archWidthCutMin_ && arch_.size() < archWidthCutMax_) {
+bool HalfSinCurveL::isEarArch(int channel) {
+    auto arch = archProcess_.at(channel);
+    if(arch.size() > archWidthCutMin_ && arch.size() < archWidthCutMax_) {
         return true;
     }
     return false;
 }
-bool HalfSinCurveL::isPowerArch(void) {
-    if(arch_.accumulate() > iConstArchPowerThrelod) {
+bool HalfSinCurveL::isPowerArch(int channel) {
+    auto arch = archProcess_.at(channel);
+    if(arch.accumulate() > iConstArchPowerThrelod) {
         return true;
     }
     return false;
 }
 
 
-void HalfSinCurveL::fillArch(void) {
+void HalfSinCurveL::fillArch(int channel) {
     //DUMP_VAR(arch_.size());
-    if(this->isEarArch() && this->isPowerArch()) {
-        //this->fillSinArch();
-        this->fillOrigArch();
+    if(this->isEarArch(channel) && this->isPowerArch(channel)) {
+        //this->fillSinArch(channel);
+        this->fillOrigArch(channel);
         keepCounter_++;
     } else {
-        this->fillEmptyArch();
+        this->fillEmptyArch(channel);
         dropCounter_++;
     }
-    arch_.clear();
+    archProcess_.clear();
 }
 
 
 void HalfSinCurveL::snapshot(void){
     WatorHiddenL::snapshot();
-    writeWave("dump/"+name_ + ".wav",blob_);
+    writeWave("dump/"+name_ + ".wav",blobs_);
     DUMP_VAR(dropCounter_);
     DUMP_VAR(keepCounter_);
     DUMP_VAR(dropCounter_+keepCounter_);
     DUMP_VAR(100*dropCounter_/(dropCounter_+keepCounter_));
 }
 
-int16_t HalfSinCurveL::value(void) {
-    return 0;
+deque<int16_t> HalfSinCurveL::value(void) {
+    return {};
 }
 
-SinBlob & HalfSinCurveL::valueSin() {
+deque<SinBlob> & HalfSinCurveL::valueSin() {
     return archs_.front();
 }
 
@@ -596,15 +609,15 @@ void FullSinCurveL::process(void) {
     }
 }
 
-int16_t FullSinCurveL::value(void) {
-    return 0;
+deque<int16_t> FullSinCurveL::value(void) {
+    return {};
 }
 
 
 
 void FullSinCurveL::snapshot(void){
     WatorHiddenL::snapshot();
-    writeWave("dump/"+name_ + ".wav",blob_);
+    writeWave("dump/"+name_ + ".wav",blobs_);
     DUMP_VAR(dropCounter_);
     DUMP_VAR(keepCounter_);
     DUMP_VAR(dropCounter_+keepCounter_);
