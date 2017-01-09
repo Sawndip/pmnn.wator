@@ -422,7 +422,7 @@ void HalfSinCurveL::process(void) {
     //cout << name_ << endl;
     auto buttom = buttom_.at(0);
     auto values = buttom->value();
-for(auto value:values) {
+    for(auto value:values) {
     if(value > 0) {
         if(archUp_ == false) {
             this->fillArch();
@@ -442,7 +442,7 @@ for(auto value:values) {
     if(absVal > maxHeight_) {
         maxHeight_ = absVal;
     }
-}
+    }
     for(auto top:top_) {
         top->forward();
     }
