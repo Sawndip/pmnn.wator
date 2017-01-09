@@ -269,6 +269,7 @@ void WatorAudioWave2L::execBody(void) {
     }
     DUMP_VAR(isRunning);
     isRunning = false;
+    cvForwordBlob_.notify_one();
     DUMP_VAR(isRunning);
 }
 
@@ -287,13 +288,13 @@ void WatorAudioWave2L::forwardOneWave(const string &path){
     DUMP_VAR(waves.begin()->size());
     for(int i = 0;i < waves.begin()->size() -1;i++) {
         // new data
-	deque<int16_t> blob;
-	for(auto &wave :waves) {
-		blob.push_back(wave.at(i));
-		if(std::abs(wave.at(i)) > maxHeight_) {
-		    maxHeight_ = std::abs(wave.at(i));
-		}
-	}
+        deque<int16_t> blob;
+        for(auto &wave :waves) {
+            blob.push_back(wave.at(i));
+            if(std::abs(wave.at(i)) > maxHeight_) {
+                maxHeight_ = std::abs(wave.at(i));
+            }
+        }
         if(blobs_.size() > iMaxWaveWidth_) {
             blobs_.pop_front();
         }
@@ -304,11 +305,13 @@ void WatorAudioWave2L::forwardOneWave(const string &path){
         cvForwordBlob_.notify_one();
         this->forward();
     }
+    cvForwordBlob_.notify_one();
+    this->forward();
 }
 deque<int16_t> WatorAudioWave2L::value(void) {
 //    DUMP_VAR(forwordBlob_.size());
     unique_lock<std::mutex> ulock(mtxForwordBlob_);
-    if(forwordBlob_.empty()) {
+    if(forwordBlob_.empty() && isRunning) {
         cvForwordBlob_.wait(ulock);
     }
     auto value = forwordBlob_.front();
@@ -441,6 +444,9 @@ void HalfSinCurveL::process(void) {
         } else {
         /// zero continue;
         }
+        if(archProcess_.size() <= channel) {
+            archProcess_.push_back({});
+        }
         archProcess_.at(channel).push(value);
 
         uint16_t absVal = std::abs(value);
@@ -460,6 +466,9 @@ void HalfSinCurveL::fillSinArch(int channel) {
     // forwod data to next layer.
     //DUMP_VAR(arch_.size());
     auto arch = archProcess_.at(channel);
+    if(blobs_.size() <= channel) {
+        blobs_.push_back({});
+    }
     auto blob = blobs_.at(channel);
     for(int i = 0 ;i < arch.size();i++){
         int16_t value = arch.max() * std::sin( (double) i * dConstPI/(double)(arch.size() -1) );
@@ -474,11 +483,17 @@ void HalfSinCurveL::fillSinArch(int channel) {
         }
     }
     //DUMP_VAR(blob.size());
+    if(archs_.size() <= channel) {
+        archs_.push_back({});
+    }
     archs_.at(channel).push_back(arch);
 }
 
 void HalfSinCurveL::fillOrigArch(int channel) {
     auto arch = archProcess_.at(channel);
+    if(blobs_.size() <= channel) {
+        blobs_.push_back({});
+    }
     auto blob = blobs_.at(channel);
     for(int i = 0 ;i < arch.size();i++){
         int16_t value = arch.at(i);
@@ -489,11 +504,17 @@ void HalfSinCurveL::fillOrigArch(int channel) {
         }
     }
     //DUMP_VAR(blob.size());
+    if(archs_.size() <= channel) {
+        archs_.push_back({});
+    }
     archs_.at(channel).push_back(arch);
 }
 
 void HalfSinCurveL::fillEmptyArch(int channel) {
     auto arch = archProcess_.at(channel);
+    if(blobs_.size() <= channel) {
+        blobs_.push_back({});
+    }
     auto blob = blobs_.at(channel);
     for(int i = 0 ;i < arch.size();i++) {
         blob.push_back(0);
@@ -502,10 +523,16 @@ void HalfSinCurveL::fillEmptyArch(int channel) {
         }
     }
     EmptySinBlob empty(arch.size());
+    if(archs_.size() <= channel) {
+        archs_.push_back({});
+    }
     archs_.at(channel).push_back(empty);
 }
 
 bool HalfSinCurveL::isEarArch(int channel) {
+    if(archs_.size() <= channel) {
+        archs_.push_back({});
+    }
     auto arch = archProcess_.at(channel);
     if(arch.size() > archWidthCutMin_ && arch.size() < archWidthCutMax_) {
         return true;
@@ -513,6 +540,9 @@ bool HalfSinCurveL::isEarArch(int channel) {
     return false;
 }
 bool HalfSinCurveL::isPowerArch(int channel) {
+    if(archs_.size() <= channel) {
+        archs_.push_back({});
+    }
     auto arch = archProcess_.at(channel);
     if(arch.accumulate() > iConstArchPowerThrelod) {
         return true;
