@@ -32,7 +32,7 @@ public:
 protected:
     virtual void execBody(void);
 protected:
-    deque<deque<int16_t>> blob_;
+    deque<deque<int16_t>> blobs_;
 
     deque<deque<int16_t>> forwordBlob_;
     mutex mtxForwordBlob_;

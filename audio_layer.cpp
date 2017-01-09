@@ -49,16 +49,19 @@ void WatorAudioWaveL::forwardOneWave(const string &path){
         return ;
     }
     
-    auto wave = waves.begin();
-    DUMP_VAR(wave->size());
-    for(int i = 0;i < wave->size() -1;i++) {
-        blob_.push_back(wave->at(i));
-        if(std::abs(wave->at(i)) > maxHeight_) {
-            maxHeight_ = std::abs(wave->at(i));
-        }
-        if(blob_.size() > iMaxWaveWidth_) {
-            blob_.pop_front();
-        }
+    DUMP_VAR(waves.begin()->size());
+    for(int i = 0;i < waves.begin()->size() -1;i++) {
+	deque<int16_t> blob;
+	for(auto &wave:waves) {
+		blob.push_back(wave.at(i));
+		if(std::abs(wave.at(i)) > maxHeight_) {
+		    maxHeight_ = std::abs(wave.at(i));
+		}
+	}
+	blobs_.push_back(blob);
+	if(blobs_.size() > iMaxWaveWidth_) {
+	    blobs_.pop_front();
+	}
         for(auto top:top_) {
             top->forward();
         }
@@ -72,14 +75,19 @@ void WatorAudioWaveL::forward(void){
 }
 
 
-int16_t WatorAudioWaveL::active(void) {
-    if(blob_.size()>1) {
-        auto it = blob_.rbegin();
-        return (*it)*2/3 + *(++it)/3;
+deque<int16_t> WatorAudioWaveL::active(void) {
+    if(blobs_.size()>1) {
+	deque<int16_t> value;
+	for(auto blob :blobs_){
+        	auto it = blob.rbegin();
+        	value.push_back( (*it)*2/3 + *(++it)/3);
+	}
+	return value;
     }
-    return 0;
+    return {};
 }
-bool WatorAudioWaveL::diactive(void) {
+deque<bool> WatorAudioWaveL::diactive(void) {
+#if 0
     allNumber_++;
     if(blob_.size()>1) {
         auto it = blob_.rbegin();
@@ -132,10 +140,12 @@ bool WatorAudioWaveL::diactive(void) {
     }
     this->adjustRate();
     return true;
+#endif
+    return {};
 }
 
-int16_t WatorAudioWaveL::value(void) {
-    return 0;
+deque<int16_t> WatorAudioWaveL::value(void) {
+    return {};
 }
 
 void WatorAudioWaveL::adjustRate(void) {
@@ -173,55 +183,60 @@ void WatorAudioWaveL::build(void) {
     WatorBaseL::build();
 }
 void WatorAudioWaveL::snapshot(void){
+    if(maxHeight_ <= 0) {
+        return;
+    }
     DUMP_VAR(name_);
     DUMP_VAR(maxHeight_);
-    DUMP_VAR(blob_.size());
+    DUMP_VAR(blobs_.size());
     int heightLow = 256;
     int heightFull = 256 *8;
     int heightDiff = 100;
-    int width = std::min(iConstWaveGraphWidth,blob_.size());;
-    cv::Mat mat( heightLow + heightFull + heightDiff ,width,CV_8UC3,cv::Scalar(255,255,255));
-    for(int i = 0;i < blob_.size();i++) {
-        
+    int width = iConstWaveGraphWidth;
+    for(const auto & blob :blobs_){
+        if(width > blob.size()){
+            width = blob.size();
+        }
+    }
+    int onechannelHeight = heightLow + heightFull + heightDiff;
+    cv::Mat mat( blobs_.size() *onechannelHeight ,width,CV_8UC3,cv::Scalar(255,255,255));
+    for(int ch = 0;ch < blobs_.size();ch++){
+      auto blob = blobs_.at(ch);
+      for(int i = 0;i < blob.size();i++) {
         auto slip = i / iConstWaveGraphWidth;
         if(i % iConstWaveGraphWidth == 0){
-            //mat = white;
-            mat = cv::Scalar(255,255,255);
+          //mat = white;
+          mat = cv::Scalar(255,255,255);
         }
-        if(i % iConstWaveGraphWidth == iConstWaveGraphWidth-1 || i == blob_.size() -1) {
-            string path = "dump/wave.out.";
-            std::stringstream ss;
-            ss << name_;
-            ss << ".";
-            ss << std::setfill('0') << std::setw(8) << slip;
-            path += ss.str();
-            path += ".png";
-            cv::imwrite( path,mat);
+        if(i % iConstWaveGraphWidth == iConstWaveGraphWidth-1 || i == blob.size() -1) {
+          string path = "dump/wave.out.";
+          std::stringstream ss;
+          ss << name_;
+          ss << ".";
+          ss << std::setfill('0') << std::setw(8) << slip;
+          path += ss.str();
+          path += ".png";
+          cv::imwrite( path,mat);
         }
         int16_t baseLineWavFull = heightFull/2;
         int16_t baseLineWavLow =  heightFull + heightLow/2;
-        int16_t val = blob_.at(i);
+        int16_t val = blob.at(i);
         int16_t yWaveFull = (int16_t)( val*(heightFull) / (2*maxHeight_)) + baseLineWavFull;;
-        
+
         int16_t yWaveLow = heightFull;
         if(std::abs(val) < heightLow/2) {
-            yWaveLow = val + baseLineWavLow;
+          yWaveLow = val + baseLineWavLow;
         }
-        
+
         int x = i % iConstWaveGraphWidth;
         cv::line(mat,cv::Point(x,yWaveFull),cv::Point(x,baseLineWavFull), cv::Scalar(0,0,255));
-        
+
         cv::line(mat,cv::Point(x,yWaveLow),cv::Point(x,baseLineWavLow), cv::Scalar(0,0,255));
-        
+
         mat.at<cv::Vec3b>(baseLineWavFull, x) = cv::Vec3b(0,0,0);
-        
+
         mat.at<cv::Vec3b>(baseLineWavLow, x) = cv::Vec3b(0,0,0);
-        
-        
-        int16_t yDiff = heightLow + heightFull + heightDiff/2;
-        if(i < intermediate_.size() && intermediate_.at(i)) {
-            mat.at<cv::Vec3b>(yDiff, x) = cv::Vec3b(0,0,0);
-        }
+      }
     }
     for(auto top:top_) {
         top->snapshot();
@@ -269,24 +284,28 @@ void WatorAudioWave2L::forwardOneWave(const string &path){
     if(waves.empty()) {
         return ;
     }
-    auto wave = waves.begin();
-    DUMP_VAR(wave->size());
-    for(int i = 0;i < wave->size() -1;i++) {
+    DUMP_VAR(waves.begin()->size());
+    for(int i = 0;i < waves.begin()->size() -1;i++) {
         // new data
-        blob_.push_back(wave->at(i));
-        if(std::abs(wave->at(i)) > maxHeight_) {
-            maxHeight_ = std::abs(wave->at(i));
+	deque<int16_t> blob;
+	for(auto &wave :waves) {
+		blob.push_back(wave.at(i));
+		if(std::abs(wave.at(i)) > maxHeight_) {
+		    maxHeight_ = std::abs(wave.at(i));
+		}
+	}
+        if(blobs_.size() > iMaxWaveWidth_) {
+            blobs_.pop_front();
         }
-        if(blob_.size() > iMaxWaveWidth_) {
-            blob_.pop_front();
-        }
+        blobs_.push_back(blob);
+
         lock_guard<std::mutex> scopLock(mtxForwordBlob_);
-        forwordBlob_.push_back(wave->at(i));
+        forwordBlob_.push_back(blob);
         cvForwordBlob_.notify_one();
         this->forward();
     }
 }
-int16_t WatorAudioWave2L::value(void) {
+deque<int16_t> WatorAudioWave2L::value(void) {
 //    DUMP_VAR(forwordBlob_.size());
     unique_lock<std::mutex> ulock(mtxForwordBlob_);
     if(forwordBlob_.empty()) {
@@ -402,7 +421,8 @@ void HalfSinCurveL::forward(void) {
 void HalfSinCurveL::process(void) {
     //cout << name_ << endl;
     auto buttom = buttom_.at(0);
-    int16_t value = buttom->value();
+    auto values = buttom->value();
+for(auto value:values) {
     if(value > 0) {
         if(archUp_ == false) {
             this->fillArch();
@@ -422,6 +442,7 @@ void HalfSinCurveL::process(void) {
     if(absVal > maxHeight_) {
         maxHeight_ = absVal;
     }
+}
     for(auto top:top_) {
         top->forward();
     }
