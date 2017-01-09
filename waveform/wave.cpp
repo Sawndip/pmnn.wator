@@ -88,7 +88,7 @@ namespace little_endian_io
 }
 using namespace little_endian_io;
 
-void writeWave(const string &path,const deque<int16_t> &data){
+void writeWave(const string &path,const deque<deque<int16_t>> &data){
     ofstream f( path, ios::binary );
     // Write the file headers
     f << "RIFF";     // (chunk size to be filled in later)
