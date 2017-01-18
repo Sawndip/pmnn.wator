@@ -8,8 +8,8 @@ all:
 	cd obj && cmake ../
 	cd obj && make 
 run:all dump-clean
-	mv ./obj/pmmn.out ./
-	./pmmn.out
+	mv ./obj/pmnn.out ./
+	./pmnn.out
 clean:
 	rm -rf obj
 	rm -rf *.out
