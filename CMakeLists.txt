@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project (pmmnn)
+project (pmnn)
 
 set (CMAKE_CXX_FLAGS "-std=c++14 -g")
 include_directories(waveform)
@@ -17,7 +17,7 @@ set (SRC main.cpp
   waveform/wave.cpp
 )
 
-add_executable(pmmn.out ${SRC})
+add_executable(pmnn.out ${SRC})
 
 if(APPLE)
   set(BOOST boost_log-mt  boost_log_setup-mt )
@@ -25,7 +25,7 @@ else(APPLE)
   set(BOOST boost_log  boost_log_setup )
 endif(APPLE)
 
-target_link_libraries(pmmn.out
+target_link_libraries(pmnn.out
   opencv_imgproc
   opencv_highgui
   opencv_core
