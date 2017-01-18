@@ -54,6 +54,7 @@ vector<vector<int16_t>> readWave(const string &path) {
     for(int i = 0 ;i < header.channels;i++) {
         waves.push_back({});
     }
+    int sameChannel = 0;
     
     do {
         int16_t buf[header.channels];
@@ -61,9 +62,13 @@ vector<vector<int16_t>> readWave(const string &path) {
         for(int i = 0 ;i < header.channels;i++) {
             waves[i].push_back(buf[i]);
         }
+        if(buf[0] == buf[1]){
+            sameChannel++;
+        }
     } while (!ifs.eof());
     for(auto & wave : waves) {
         DUMP_VAR(wave.size());
+        DUMP_VAR(sameChannel);
     }
     return waves;
 }
