@@ -35,6 +35,9 @@ void AudioWaveLayer::forward(void) {
 void AudioWaveLayer::execBody(void) {
     DUMP_VAR(name_);
     DUMP_VAR(t_.get_id());
+    for(int i = 0;i < 1;i++) {
+        this->forwardOneWave("./waveform/myRecording06.wav");
+    }
 }
 
 
