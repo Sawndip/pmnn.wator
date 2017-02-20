@@ -7,7 +7,7 @@
 #include <thread>
 using namespace std;
 
-#include "base_layer.hpp"
+#include "base_blob.hpp"
 
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>

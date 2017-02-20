@@ -10,20 +10,12 @@
 #include <atomic>
 using namespace std;
 
+#include "base_blob.hpp"
 #pragma once
 
 static const int iInterActiveRateReciprocal = 4;
 
 namespace WatorVapor {
-    template < typename T > class Blob {
-    public:
-        Blob();
-        void push(T val);
-    protected:
-    protected:
-        deque<T> memory_;
-    };
-    
     class BaseLayer:public std::enable_shared_from_this<BaseLayer> {
     public:
         void operator()();
