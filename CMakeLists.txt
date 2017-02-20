@@ -16,6 +16,7 @@ set (SRC main.cpp
   audio_layer.cpp
   net.cpp
   core/base_layer.cpp
+  core/base_blob.cpp
   core/audio_layer.cpp
   core/net.cpp
   waveform/wave.cpp
