@@ -13,11 +13,11 @@ using namespace std;
 
 #define NAME__(x) {x.name(#x);}
 
+/*
 int main() {
     boost::log::core::get()->set_filter (
                                          boost::log::trivial::severity >= boost::log::trivial::trace
                                          );
-/*
   shared_ptr<WatorAudioWaveL> audio = make_shared<WatorAudioWaveL>();
   NAME_(audio);
   
@@ -85,7 +85,6 @@ int main() {
     hide8->setDAF(0.5);
     hide9->setDAF(0.5);
     hide10->setDAF(0.5);
-*/
     shared_ptr<WatorAudioWave2L> audio = make_shared<WatorAudioWave2L>();
     NAME_(audio);
     shared_ptr<HalfSinCurveL> halfSin = make_shared<HalfSinCurveL>();
@@ -109,4 +108,35 @@ int main() {
   net.train();
   net.snapshot();
   return 0;
+}
+ */
+
+
+
+
+int main() {
+    boost::log::core::get()->set_filter (
+                                         boost::log::trivial::severity >= boost::log::trivial::trace
+                                         );
+    using namespace WatorVapor;
+
+    shared_ptr<AudioWaveLayer> audio = make_shared<AudioWaveLayer>();
+    NAME_(audio);
+    shared_ptr<Peak2PeakLayer> peak = make_shared<Peak2PeakLayer>();
+    NAME_(peak);
+    shared_ptr<OutputLayer> out = make_shared<OutputLayer>();
+    NAME_(out);
+    
+    audio->addTop(peak);
+    peak->addTop(out);
+    
+    peak->addButtom(audio);
+    out->addButtom(peak);
+    
+    
+    Net net(audio);
+    net.build();
+    net.train();
+    net.snapshot();
+    return 0;
 }

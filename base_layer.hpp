@@ -54,6 +54,12 @@ namespace WatorVapor {
         void addTop(BaseLayerPtr top) {
             top_.push_back(top);
         }
+        virtual void build(void) {
+            BaseLayer::build();
+            for(auto & top : top_) {
+                top->build();
+            }
+        }
         
         virtual void forward(void) {}
 
@@ -83,7 +89,12 @@ namespace WatorVapor {
     template < typename T > class HiddenLayer :public BaseLayer {
     public:
         HiddenLayer() {}
-        virtual void build(void) {}
+        virtual void build(void) {
+            BaseLayer::build();
+            for(auto & top : top_) {
+                top->build();
+            }
+        }
         virtual void wait(void) {}
         
         virtual void addTop(BaseLayerPtr top) {

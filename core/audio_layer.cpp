@@ -36,3 +36,16 @@ void AudioWaveLayer::execBody(void) {
     DUMP_VAR(name_);
     DUMP_VAR(t_.get_id());
 }
+
+
+
+
+
+
+Peak2PeakLayer::Peak2PeakLayer() {
+}
+
+void Peak2PeakLayer::execBody(void) {
+    DUMP_VAR(name_);
+    DUMP_VAR(t_.get_id());
+}

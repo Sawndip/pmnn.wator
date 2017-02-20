@@ -34,7 +34,6 @@ namespace WatorVapor {
     class Peak2PeakLayer :public HiddenLayer<int16_t> {
     public:
         Peak2PeakLayer();
-        virtual ~Peak2PeakLayer();
     protected:
         virtual void execBody(void);
     private:
