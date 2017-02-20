@@ -19,12 +19,21 @@ using namespace std;
 
 using namespace WatorVapor;
 
-template < typename T > Blob<T>::Blob() {
+template < typename T > Blob<T>::Blob(condition_variable &cond_var)
+:cond_var_(cond_var){
 }
 
 template < typename T > void Blob<T>::push(T val) {
+    unique_lock<mutex> lock(mtx_);
+    memory_.push_back(val);
+    cond_var_.notify_all();
+}
+
+template < typename T > void Blob<T>::wait() {
+    unique_lock<mutex> lock(mtx_);
+    cond_var_.wait(lock);
 }
 
 
-template  Blob<int16_t>::Blob();
+template  Blob<int16_t>::Blob(condition_variable &cond_var);
 template  void Blob<int16_t>::push(int16_t val);

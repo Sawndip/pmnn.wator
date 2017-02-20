@@ -8,6 +8,8 @@
 #include <deque>
 #include <thread>
 #include <atomic>
+#include <condition_variable>
+#include <mutex>
 using namespace std;
 
 #include "base_blob.hpp"
@@ -32,6 +34,7 @@ namespace WatorVapor {
         string name_ = "";
         int16_t depth_ = 0;
         std::thread t_;
+        condition_variable cond_var_;
         
         
     protected:

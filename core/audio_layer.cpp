@@ -48,7 +48,8 @@ void AudioWaveLayer::forwardOneWave(const string &path){
     for(int channel = 0; channel <waves.size();channel++ ) {
         auto &wave = waves.at(channel);
         if(blobs_.size() <= channel) {
-            blobs_.push_back({});
+            Blob<int16_t> blob(cond_var_);
+            blobs_.push_back(blob);
         }
         if(minWave > wave.size()) {
             minWave = wave.size();
