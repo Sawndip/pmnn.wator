@@ -3,6 +3,7 @@ project (pmnn)
 
 set (CMAKE_CXX_FLAGS "-std=c++14 -g")
 include_directories(waveform)
+include_directories(./)
 include_directories(/usr/local/include)
 add_definitions(-DBOOST_LOG_DYN_LINK)
 
@@ -14,6 +15,9 @@ set (SRC main.cpp
   base_layer.cpp
   audio_layer.cpp
   net.cpp
+  core/base_layer.cpp
+  core/audio_layer.cpp
+  core/net.cpp
   waveform/wave.cpp
 )
 

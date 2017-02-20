@@ -14,6 +14,98 @@ using namespace std;
 
 static const int iInterActiveRateReciprocal = 4;
 
+namespace WatorVapor {
+    template < typename T > class Blob {
+    public:
+        Blob();
+    protected:
+    protected:
+        deque<T> memory_;
+    };
+    
+    class BaseLayer:public std::enable_shared_from_this<BaseLayer> {
+    public:
+        void operator()();
+        virtual void build(void);
+        virtual void wait(void);
+        virtual int width(void);
+        virtual void snapshot(void);
+        void name(const string &name);
+        int depth(void);
+        virtual void forward(void);
+    protected:
+        BaseLayer();
+        virtual void execBody(void);
+    protected:
+        string name_ = "";
+        int16_t depth_ = 0;
+        std::thread t_;
+        
+        
+    protected:
+        static atomic_bool isRunning;
+        
+    };
+    typedef shared_ptr<BaseLayer> BaseLayerPtr;
+
+    template < typename T > class InputLayer :public BaseLayer {
+    public:
+        InputLayer() {}
+        void addTop(BaseLayerPtr top) {
+            top_.push_back(top);
+        }
+        
+        virtual void forward(void) {}
+
+    protected:
+        virtual void execBody(void) {}
+    protected:
+        vector<BaseLayerPtr> top_;
+        deque<Blob<T>> blobs_;
+    private:
+    };
+    class OutputLayer :public BaseLayer {
+    public:
+        OutputLayer() {}
+        virtual void build(void) {}
+        virtual void wait(void) {}
+        
+        void addButtom(BaseLayerPtr buttom) {
+            buttom_.push_back(buttom);
+        }
+        
+    protected:
+        virtual void execBody(void) {}
+    protected:
+        vector<BaseLayerPtr> buttom_;
+    };
+    
+    template < typename T > class HiddenLayer :public BaseLayer {
+    public:
+        HiddenLayer() {}
+        virtual void build(void) {}
+        virtual void wait(void) {}
+        
+        virtual void addTop(BaseLayerPtr top) {
+            top_.push_back(top);
+        }
+        virtual void addButtom(BaseLayerPtr buttom) {
+            buttom_.push_back(buttom);
+        }
+        
+        virtual void forward(void) {}
+    protected:
+        virtual void execBody(void) {}
+    protected:
+        vector<BaseLayerPtr> top_;
+        vector<BaseLayerPtr> buttom_;
+        
+        deque<Blob<T>> blobs_;
+    };
+}
+
+
+
 
 
 class WatorBaseL:public std::enable_shared_from_this<WatorBaseL> {

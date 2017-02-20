@@ -14,6 +14,33 @@ using namespace std;
 #pragma once
 
 
+namespace WatorVapor {
+    class AudioWaveLayer :public InputLayer<int16_t> {
+    public:
+        AudioWaveLayer();
+        
+        virtual int width(void);
+        virtual void snapshot(void);
+        
+        virtual void forward(void);
+    protected:
+        virtual void execBody(void);
+    protected:
+    private:
+        void forwardOneWave(const string &path);
+    private:
+    };
+    
+    class Peak2PeakLayer :public HiddenLayer<int16_t> {
+    public:
+        Peak2PeakLayer();
+        virtual ~Peak2PeakLayer();
+    protected:
+        virtual void execBody(void);
+    private:
+    private:
+    };
+}
 
 
 class WatorAudioWaveL :public WatorInputL {
