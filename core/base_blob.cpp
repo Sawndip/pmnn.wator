@@ -19,3 +19,5 @@ using namespace std;
 
 using namespace WatorVapor;
 
+template < typename T > Blob::Blob() {
+}
