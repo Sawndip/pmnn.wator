@@ -22,7 +22,6 @@ namespace WatorVapor {
         virtual int width(void);
         virtual void snapshot(void);
         
-        virtual void forward(void);
     protected:
         virtual void execBody(void);
     protected:

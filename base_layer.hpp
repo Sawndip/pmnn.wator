@@ -18,6 +18,7 @@ namespace WatorVapor {
     template < typename T > class Blob {
     public:
         Blob();
+        void push(T val);
     protected:
     protected:
         deque<T> memory_;
@@ -32,7 +33,6 @@ namespace WatorVapor {
         virtual void snapshot(void);
         void name(const string &name);
         int depth(void);
-        virtual void forward(void);
     protected:
         BaseLayer();
         virtual void execBody(void);
@@ -60,9 +60,6 @@ namespace WatorVapor {
                 top->build();
             }
         }
-        
-        virtual void forward(void) {}
-
     protected:
         virtual void execBody(void) {}
     protected:
@@ -103,8 +100,6 @@ namespace WatorVapor {
         virtual void addButtom(BaseLayerPtr buttom) {
             buttom_.push_back(buttom);
         }
-        
-        virtual void forward(void) {}
     protected:
         virtual void execBody(void) {}
     protected:

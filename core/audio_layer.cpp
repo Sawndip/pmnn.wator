@@ -29,8 +29,6 @@ int AudioWaveLayer::width(void) {
 void AudioWaveLayer::snapshot(void) {
 }
 
-void AudioWaveLayer::forward(void) {
-}
 
 void AudioWaveLayer::execBody(void) {
     DUMP_VAR(name_);
@@ -46,15 +44,22 @@ void AudioWaveLayer::forwardOneWave(const string &path){
     if(waves.empty()) {
         return ;
     }
-    DUMP_VAR(waves.begin()->size());
+    int32_t minWave = waves.begin()->size();
     for(int channel = 0; channel <waves.size();channel++ ) {
         auto &wave = waves.at(channel);
         if(blobs_.size() <= channel) {
             blobs_.push_back({});
         }
+        if(minWave > wave.size()) {
+            minWave = wave.size();
+        }
     }
-    for(auto top:top_) {
-        top->forward();
+    DUMP_VAR(minWave);
+    for(int frame = 0 ; frame < minWave; frame++ ) {
+        int channel = 0;
+        for( auto &wave :waves) {
+            blobs_.at(channel++).push(wave.at(frame));
+        }
     }
 }
 

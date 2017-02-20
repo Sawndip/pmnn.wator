@@ -49,8 +49,6 @@ void BaseLayer::name(const string &name) {
 int BaseLayer::depth(void) {
     return depth_;
 }
-void BaseLayer::forward(void) {
-}
 
 void BaseLayer::execBody(void) {
     DUMP_VAR(t_.get_id());

@@ -19,5 +19,12 @@ using namespace std;
 
 using namespace WatorVapor;
 
-template < typename T > Blob::Blob() {
+template < typename T > Blob<T>::Blob() {
 }
+
+template < typename T > void Blob<T>::push(T val) {
+}
+
+
+template  Blob<int16_t>::Blob();
+template  void Blob<int16_t>::push(int16_t val);
