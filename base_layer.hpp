@@ -54,6 +54,9 @@ namespace WatorVapor {
                 top->build();
             }
         }
+        virtual void fetch(T &value,int16_t &channel) {
+            blobs_;
+        }
     protected:
         virtual void execBody(void) {}
     protected:
@@ -86,7 +89,7 @@ namespace WatorVapor {
                 top->build();
             }
         }
-        virtual void wait(void) {}
+        virtual void fetch(T &value,int16_t &channel) {}
         
         virtual void addTop(BaseLayerPtr top) {
             top_.push_back(top);

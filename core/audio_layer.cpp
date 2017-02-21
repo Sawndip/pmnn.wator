@@ -79,6 +79,7 @@ void Peak2PeakLayer::execBody(void) {
     while(isRunning) {
         for(auto &buttom:buttom_){
             //DUMP_VAR(isRunning);
+            auto buttom->fetch();
         }
     }
     DUMP_VAR(name_);

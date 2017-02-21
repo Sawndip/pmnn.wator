@@ -21,6 +21,7 @@ namespace WatorVapor {
         
         virtual int width(void);
         virtual void snapshot(void);
+        virtual void fetch(T &value,int16_t &channel) {}
         
     protected:
         virtual void execBody(void);
