@@ -19,6 +19,7 @@ using namespace std;
 
 using namespace WatorVapor;
 
+atomic_bool BaseLayer::isRunning(true);
 BaseLayer::BaseLayer() {
     DUMP_VAR(this);
 }

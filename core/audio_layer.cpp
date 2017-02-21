@@ -36,6 +36,8 @@ void AudioWaveLayer::execBody(void) {
     for(int i = 0;i < 1;i++) {
         this->forwardOneWave("./waveform/myRecording06.wav");
     }
+    isRunning = false;
+    DUMP_VAR(t_.get_id());
 }
 
 void AudioWaveLayer::forwardOneWave(const string &path){
@@ -48,7 +50,7 @@ void AudioWaveLayer::forwardOneWave(const string &path){
     for(int channel = 0; channel <waves.size();channel++ ) {
         auto &wave = waves.at(channel);
         if(blobs_.size() <= channel) {
-            Blob<int16_t> blob(cond_var_);
+            auto blob = std::make_shared<Blob<int16_t>>(cond_var_,mtx_,memoryWidth_);
             blobs_.push_back(blob);
         }
         if(minWave > wave.size()) {
@@ -59,7 +61,7 @@ void AudioWaveLayer::forwardOneWave(const string &path){
     for(int frame = 0 ; frame < minWave; frame++ ) {
         int channel = 0;
         for( auto &wave :waves) {
-            blobs_.at(channel++).push(wave.at(frame));
+            blobs_.at(channel++)->push(wave.at(frame));
         }
     }
 }
@@ -72,6 +74,13 @@ Peak2PeakLayer::Peak2PeakLayer() {
 }
 
 void Peak2PeakLayer::execBody(void) {
+    DUMP_VAR(name_);
+    DUMP_VAR(t_.get_id());
+    while(isRunning) {
+        for(auto &buttom:buttom_){
+            //DUMP_VAR(isRunning);
+        }
+    }
     DUMP_VAR(name_);
     DUMP_VAR(t_.get_id());
 }

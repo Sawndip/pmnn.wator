@@ -35,8 +35,7 @@ namespace WatorVapor {
         int16_t depth_ = 0;
         std::thread t_;
         condition_variable cond_var_;
-        
-        
+        mutex mtx_;
     protected:
         static atomic_bool isRunning;
         
@@ -59,7 +58,7 @@ namespace WatorVapor {
         virtual void execBody(void) {}
     protected:
         vector<BaseLayerPtr> top_;
-        deque<Blob<T>> blobs_;
+        deque<shared_ptr<Blob<T>>> blobs_;
     private:
     };
     class OutputLayer :public BaseLayer {
@@ -101,7 +100,7 @@ namespace WatorVapor {
         vector<BaseLayerPtr> top_;
         vector<BaseLayerPtr> buttom_;
         
-        deque<Blob<T>> blobs_;
+        deque<shared_ptr<Blob<T>>> blobs_;
     };
 }
 

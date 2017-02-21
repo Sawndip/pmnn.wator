@@ -28,6 +28,7 @@ namespace WatorVapor {
     private:
         void forwardOneWave(const string &path);
     private:
+        const uint32_t memoryWidth_ = 48*1024 *5;
     };
     
     class Peak2PeakLayer :public HiddenLayer<int16_t> {
