@@ -21,7 +21,7 @@ namespace WatorVapor {
         
         virtual int width(void);
         virtual void snapshot(void);
-        virtual void fetch(int16_t &value,int16_t &channel) {}
+        void fetch(int16_t &value,int16_t &channel);
         
     protected:
         virtual void execBody(void);
@@ -37,7 +37,7 @@ namespace WatorVapor {
     public:
         Peak2PeakLayer();
     protected:
-        virtual void execBody(void);
+        virtual void onThink(void);
     private:
     private:
         deque<shared_ptr<Blob<int16_t>>> blobs_;
@@ -47,7 +47,7 @@ namespace WatorVapor {
     public:
         TextOutputLayer(){}
     protected:
-        virtual void execBody(void){}
+        virtual void onThink(void){}
     private:
     private:
         deque<shared_ptr<Blob<int32_t>>> blobs_;

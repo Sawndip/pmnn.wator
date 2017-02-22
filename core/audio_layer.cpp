@@ -66,6 +66,12 @@ void AudioWaveLayer::forwardOneWave(const string &path){
     }
 }
 
+void AudioWaveLayer::fetch(int16_t &value,int16_t &channel) {
+    for(auto blob:blobs_) {
+        value = blob->wait();
+    }
+}
+
 
 
 
@@ -73,17 +79,20 @@ void AudioWaveLayer::forwardOneWave(const string &path){
 Peak2PeakLayer::Peak2PeakLayer() {
 }
 
-void Peak2PeakLayer::execBody(void) {
+void Peak2PeakLayer::onThink(void) {
     DUMP_VAR(name_);
-    DUMP_VAR(t_.get_id());
-    while(isRunning) {
-        for(auto &buttom:buttom_){
-            //DUMP_VAR(isRunning);
+    for(auto buttom :buttom_) {
+        auto wave = std::dynamic_pointer_cast<AudioWaveLayer>(buttom);
+        if(wave) {
+            DUMP_VAR("AudioWaveLayer");
             int16_t value;
             int16_t channel;
-            //buttom->fetch(value,channel);
+            wave->fetch(value,channel);
+        }
+        auto peak = std::dynamic_pointer_cast<Peak2PeakLayer>(buttom);
+        if(peak) {
+            DUMP_VAR("Peak2PeakLayer");
         }
     }
-    DUMP_VAR(name_);
-    DUMP_VAR(t_.get_id());
 }
+
