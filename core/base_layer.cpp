@@ -52,5 +52,14 @@ int BaseLayer::depth(void) {
 }
 
 void BaseLayer::execBody(void) {
+    DUMP_VAR(name_);
     DUMP_VAR(t_.get_id());
+    while(isRunning) {
+        this->onThink();
+    }
+    DUMP_VAR(name_);
+    DUMP_VAR(t_.get_id());
+}
+void BaseLayer::onThink(void) {
+    DUMP_VAR(name_);
 }

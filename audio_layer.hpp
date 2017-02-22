@@ -15,13 +15,13 @@ using namespace std;
 
 
 namespace WatorVapor {
-    class AudioWaveLayer :public InputLayer<int16_t> {
+    class AudioWaveLayer :public InputLayer {
     public:
         AudioWaveLayer();
         
         virtual int width(void);
         virtual void snapshot(void);
-        virtual void fetch(T &value,int16_t &channel) {}
+        virtual void fetch(int16_t &value,int16_t &channel) {}
         
     protected:
         virtual void execBody(void);
@@ -30,15 +30,27 @@ namespace WatorVapor {
         void forwardOneWave(const string &path);
     private:
         const uint32_t memoryWidth_ = 48*1024 *5;
+        deque<shared_ptr<Blob<int16_t>>> blobs_;
     };
     
-    class Peak2PeakLayer :public HiddenLayer<int16_t> {
+    class Peak2PeakLayer :public HiddenLayer {
     public:
         Peak2PeakLayer();
     protected:
         virtual void execBody(void);
     private:
     private:
+        deque<shared_ptr<Blob<int16_t>>> blobs_;
+    };
+
+    class TextOutputLayer :public OutputLayer {
+    public:
+        TextOutputLayer(){}
+    protected:
+        virtual void execBody(void){}
+    private:
+    private:
+        deque<shared_ptr<Blob<int32_t>>> blobs_;
     };
 }
 

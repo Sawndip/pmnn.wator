@@ -22,7 +22,7 @@ namespace WatorVapor {
     public:
         void operator()();
         virtual void build(void);
-        virtual void wait(void);
+        void wait(void);
         virtual int width(void);
         virtual void snapshot(void);
         void name(const string &name);
@@ -30,6 +30,7 @@ namespace WatorVapor {
     protected:
         BaseLayer();
         virtual void execBody(void);
+        virtual void onThink(void);
     protected:
         string name_ = "";
         int16_t depth_ = 0;
@@ -42,7 +43,8 @@ namespace WatorVapor {
     };
     typedef shared_ptr<BaseLayer> BaseLayerPtr;
 
-    template < typename T > class InputLayer :public BaseLayer {
+    
+    class InputLayer :public BaseLayer {
     public:
         InputLayer() {}
         void addTop(BaseLayerPtr top) {
@@ -54,33 +56,28 @@ namespace WatorVapor {
                 top->build();
             }
         }
-        virtual void fetch(T &value,int16_t &channel) {
-            blobs_;
-        }
     protected:
-        virtual void execBody(void) {}
     protected:
         vector<BaseLayerPtr> top_;
-        deque<shared_ptr<Blob<T>>> blobs_;
     private:
     };
+    
+    
     class OutputLayer :public BaseLayer {
     public:
         OutputLayer() {}
         virtual void build(void) {}
-        virtual void wait(void) {}
         
         void addButtom(BaseLayerPtr buttom) {
             buttom_.push_back(buttom);
         }
         
     protected:
-        virtual void execBody(void) {}
     protected:
         vector<BaseLayerPtr> buttom_;
     };
     
-    template < typename T > class HiddenLayer :public BaseLayer {
+    class HiddenLayer :public BaseLayer {
     public:
         HiddenLayer() {}
         virtual void build(void) {
@@ -89,7 +86,6 @@ namespace WatorVapor {
                 top->build();
             }
         }
-        virtual void fetch(T &value,int16_t &channel) {}
         
         virtual void addTop(BaseLayerPtr top) {
             top_.push_back(top);
@@ -98,12 +94,9 @@ namespace WatorVapor {
             buttom_.push_back(buttom);
         }
     protected:
-        virtual void execBody(void) {}
     protected:
         vector<BaseLayerPtr> top_;
         vector<BaseLayerPtr> buttom_;
-        
-        deque<shared_ptr<Blob<T>>> blobs_;
     };
 }
 

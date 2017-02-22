@@ -124,14 +124,14 @@ int main() {
     NAME_(audio);
     shared_ptr<Peak2PeakLayer> peak = make_shared<Peak2PeakLayer>();
     NAME_(peak);
-    shared_ptr<OutputLayer> out = make_shared<OutputLayer>();
-    NAME_(out);
+    shared_ptr<TextOutputLayer> text = make_shared<TextOutputLayer>();
+    NAME_(text);
     
     audio->addTop(peak);
-    peak->addTop(out);
+    peak->addTop(text);
     
     peak->addButtom(audio);
-    out->addButtom(peak);
+    text->addButtom(peak);
     
     
     Net net(audio);

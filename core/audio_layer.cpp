@@ -79,7 +79,9 @@ void Peak2PeakLayer::execBody(void) {
     while(isRunning) {
         for(auto &buttom:buttom_){
             //DUMP_VAR(isRunning);
-            auto buttom->fetch();
+            int16_t value;
+            int16_t channel;
+            //buttom->fetch(value,channel);
         }
     }
     DUMP_VAR(name_);
